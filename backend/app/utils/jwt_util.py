@@ -1,13 +1,13 @@
-from datetime import datetime, timezone, timedelta
-import jwt
+from datetime import datetime, timedelta, timezone
 
+import jwt
 from app.config.config import settings
 
 
 class JwtUtil:
     @staticmethod
     def create_token(user_id: int) -> str:
-        expiration_time = datetime.now(tz=timezone.utc) + timedelta(
+        expiration_time: datetime = datetime.now(tz=timezone.utc) + timedelta(
             minutes=settings.JWT_EXPIRATION_TIME
         )
 

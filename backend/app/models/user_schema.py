@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -17,4 +19,8 @@ class User(BaseModel):
     first_name: str
     last_name: str
     email: str
+    phone: str
+    country: str
+    city: str
     username: str
+    created_at: datetime

@@ -23,7 +23,7 @@ connection_pool = ConnectionPool()
 
 class DatabaseConnection:
     def __enter__(self) -> pooling.PooledMySQLConnection:
-        self.connection = connection_pool.get_connection()
+        self.connection: pooling.PooledMySQLConnection = connection_pool.get_connection()
         return self.connection
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
