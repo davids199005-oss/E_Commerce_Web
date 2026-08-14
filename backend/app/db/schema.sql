@@ -10,7 +10,6 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TABLE items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -20,7 +19,6 @@ CREATE TABLE items (
     CHECK (price_usd >= 0),
     CHECK (stock_qty >= 0)
 );
-
 CREATE TABLE favorites (
     user_id INT NOT NULL,
     item_id INT NOT NULL,
@@ -29,7 +27,6 @@ CREATE TABLE favorites (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (item_id) REFERENCES items(id)
 );
-
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -41,7 +38,6 @@ CREATE TABLE orders (
     status ENUM('TEMP', 'CLOSED') NOT NULL DEFAULT 'TEMP',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE order_items (
     order_id INT NOT NULL,
     item_id INT NOT NULL,
@@ -51,7 +47,6 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
-
 CREATE TABLE user_active_orders (
     user_id INT NOT NULL PRIMARY KEY,
     order_id INT NOT NULL UNIQUE,

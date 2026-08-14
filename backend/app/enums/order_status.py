@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class OrderStatus(str, Enum):
-  TEMP = "TEMP"
-  CLOSED = "CLOSED"
+    TEMP = "TEMP"
+    CLOSED = "CLOSED"
