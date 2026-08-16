@@ -6,7 +6,7 @@ from app.utils.password_util import PasswordUtil
 
 class AuthService:
     @staticmethod
-    def register(user_data: UserCreate) -> dict:
+    def register(user_data: UserCreate) -> int:
         if UsersRepository.exists_by_username_or_email(user_data.username, user_data.email):
             raise ValueError("Username or email already exists")
 
@@ -20,9 +20,7 @@ class AuthService:
             "username": user_data.username,
             "password_hash": PasswordUtil.hash_password(user_data.password)
         }
-
-        user_id: int = UsersRepository.create_user(user_record)
-        return {"id": user_id,"token": JwtUtil.create_token(user_id)}
+        return  UsersRepository.create_user(user_record)
 
     @staticmethod
     def login(username: str, password: str) -> str | None:

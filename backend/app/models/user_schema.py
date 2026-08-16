@@ -24,3 +24,8 @@ class User(BaseModel):
     city: str
     username: str
     created_at: datetime
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
