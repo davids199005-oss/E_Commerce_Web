@@ -9,12 +9,11 @@ class UsersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                """
-                INSERT INTO users
-                    (first_name, last_name, email, phone, country, city, username, password_hash)
-                VALUES
-                    (%s, %s, %s, %s, %s, %s, %s, %s)
-                """,
+                        """
+                        INSERT INTO users
+                        (first_name, last_name, email, phone, country, city, username, password_hash)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        """,
                 (
                     user["first_name"],
                     user["last_name"],
@@ -60,10 +59,19 @@ class UsersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                """
-                SELECT id, username, email, first_name, last_name, phone, country, city, created_at
-                FROM users WHERE id = %s
-                """,
+                        """
+                        SELECT id,
+                               username,
+                               email,
+                               first_name,
+                               last_name,
+                               phone,
+                               country,
+                               city,
+                               created_at
+                        FROM users
+                        WHERE id = %s
+                        """,
                 (user_id,),
             )
             return cursor.fetchone()
