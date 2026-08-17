@@ -1,12 +1,9 @@
-from fastapi.routing import APIRouter
-
-
-from typing import Any
 from fastapi import Depends, HTTPException, status
+from fastapi.routing import APIRouter
 
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
 from app.middleware.auth_middleware import get_current_user_id
-from app.models.order_schema import OrderItemRequest, OrderRecord
+from app.models.order_schema import OrderDetailRecord, OrderItemRequest, OrderRecord
 from app.services.orders_service import OrdersService
 
 router: APIRouter = APIRouter(prefix="/orders", tags=["Orders"])
@@ -69,7 +66,7 @@ def purchase(user_id: int = Depends(dependency=get_current_user_id)) -> dict[str
 @router.get(path="/{order_id}")
 def get_order_details(
         order_id: int, user_id: int = Depends(dependency=get_current_user_id)
-) -> dict[str, dict[str, Any] | str]:
+) -> OrderDetailRecord:
     try:
         return OrdersService.get_order_details(user_id, order_id)
     except NotFoundError as e:

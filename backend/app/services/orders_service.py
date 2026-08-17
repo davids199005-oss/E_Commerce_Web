@@ -1,10 +1,11 @@
-from typing import Any
+from backend.app.models.order_schema import OrderByIdRecord
+
 
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
-from app.models.order_schema import OrderRecord
-from app.repositories.items_repository import ItemsRepository
+from app.models.order_schema import OrderDetailRecord, OrderRecord
+from app.repositories.items_repository import ItemRecord, ItemsRepository
 from app.repositories.orders_repository import OrdersRepository
-from app.repositories.users_repository import UsersRepository
+from app.repositories.users_repository import UserRecord, UsersRepository
 from app.services.items_service import ItemsService
 
 
@@ -14,20 +15,29 @@ class OrdersService:
         return OrdersRepository.get_orders_by_user(user_id)
 
     @staticmethod
-    def get_order_details(user_id: int, order_id: int) -> dict[str, Any]:
-        order: dict[str, Any] | None = OrdersRepository.get_order_by_id(order_id)
+    def get_order_details(user_id: int, order_id: int) -> OrderDetailRecord:
+        order: OrderByIdRecord | None = OrdersRepository.get_order_by_id(order_id)
         if order is None or order["user_id"] != user_id:
             raise NotFoundError("Order not found")
 
-        order["items"] = OrdersRepository.get_order_items(order_id)
-        return order
+        return OrderDetailRecord(
+            id=order["id"],
+            user_id=order["user_id"],
+            status=order["status"],
+            shipping_country=order["shipping_country"],
+            shipping_city=order["shipping_city"],
+            total_price_usd=order["total_price_usd"],
+            created_at=order["created_at"],
+            closed_at=order["closed_at"],
+            items=OrdersRepository.get_order_items(order_id),
+        )
 
     @staticmethod
     def add_item(user_id: int, item_id: int, quantity: int) -> int:
         if quantity < 1:
             raise ValidationError("Quantity must be at least 1")
 
-        item: dict[str, Any] | None = ItemsRepository.get_item_by_id(item_id)
+        item: ItemRecord | None = ItemsRepository.get_item_by_id(item_id)
         if item is None:
             raise NotFoundError("Item not found")
 
@@ -46,7 +56,7 @@ class OrdersService:
             )
 
         if order_id is None:
-            user: dict[str, Any] | None = UsersRepository.get_by_id(user_id)
+            user: UserRecord | None = UsersRepository.get_by_id(user_id)
             if user is None:
                 raise NotFoundError("User not found")
             order_id = OrdersRepository.create_temp_order(
@@ -65,7 +75,7 @@ class OrdersService:
         if order_id is None:
             raise NotFoundError("You have no active order")
 
-        removed_rows = OrdersRepository.remove_item_from_order(order_id, item_id)
+        removed_rows: int = OrdersRepository.remove_item_from_order(order_id, item_id)
         if removed_rows == 0:
             raise NotFoundError("Item is not in your order")
 

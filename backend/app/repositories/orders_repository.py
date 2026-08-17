@@ -4,7 +4,7 @@ from typing import cast
 from app.db.connection import get_connection
 from app.enums.order_status import OrderStatus
 from app.exceptions.app_exceptions import ConflictError, ValidationError
-from app.models.order_schema import OrderRecord
+from app.models.order_schema import OrderByIdRecord, OrderItemRecord, OrderRecord
 
 
 class OrdersRepository:
@@ -45,7 +45,7 @@ class OrdersRepository:
             return order_id
 
     @staticmethod
-    def get_order_by_id(order_id: int) -> dict[str, Any] | None:
+    def get_order_by_id(order_id: int) -> OrderByIdRecord | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -65,7 +65,10 @@ class OrdersRepository:
                         """,
                 (order_id,),
             )
-            return cursor.fetchone()
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return cast(OrderByIdRecord, row)
 
     @staticmethod
     def get_orders_by_user(user_id: int) -> list[OrderRecord]:
@@ -91,17 +94,17 @@ class OrdersRepository:
             return cast(list[OrderRecord], cursor.fetchall())
 
     @staticmethod
-    def get_order_items(order_id: int) -> list[dict[str, Any]]:
+    def get_order_items(order_id: int) -> list[OrderItemRecord]:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
                         """
-                        SELECT items.id,
+                        SELECT items.id AS item_id,
                                items.name,
                                order_items.quantity,
-                               order_items.unit_usd,
+                               order_items.unit_usd AS unit_price,
                                items.stock_qty
                         FROM order_items
                                  JOIN items ON order_items.item_id = items.id
@@ -109,7 +112,7 @@ class OrdersRepository:
                         """,
                 (order_id,),
             )
-            return cursor.fetchall()
+            return cast(list[OrderItemRecord], cursor.fetchall())
 
     @staticmethod
     def add_item_to_order(

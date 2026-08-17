@@ -4,12 +4,12 @@ from typing import TypedDict
 
 from pydantic import BaseModel, Field
 
-# Pydantic models for request validation
+
 class OrderItemRequest(BaseModel):
     item_id: int = Field(gt=0)
     quantity: int = Field(default=1, gt=0)
 
-# Pydantic model for order record
+
 class OrderRecord(TypedDict):
     id: int
     status: str
@@ -18,3 +18,19 @@ class OrderRecord(TypedDict):
     total_price_usd: Decimal
     created_at: datetime
     closed_at: datetime | None
+
+
+class OrderByIdRecord(OrderRecord):
+    user_id: int
+
+
+class OrderItemRecord(TypedDict):
+    item_id: int
+    name: str
+    quantity: int
+    unit_price: Decimal
+    stock_qty: int
+
+
+class OrderDetailRecord(OrderByIdRecord):
+    items: list[OrderItemRecord]

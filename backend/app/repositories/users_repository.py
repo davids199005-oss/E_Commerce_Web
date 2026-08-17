@@ -1,9 +1,40 @@
+from datetime import datetime
+from typing import TypedDict, cast
+
 from app.db.connection import get_connection
 
 
+class UserRecord(TypedDict):
+    id: int
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    phone: str
+    country: str
+    city: str
+    created_at: datetime
+
+
+class UserAuthRecord(TypedDict):
+    id: int
+    username: str
+    email: str
+    password_hash: str
+
+class UserWrite(TypedDict):
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    country: str
+    city: str
+    username: str
+    password_hash: str
+
 class UsersRepository:
     @staticmethod
-    def create_user(user: dict[str, Any]) -> int:
+    def create_user(user: UserWrite) -> int:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -29,7 +60,7 @@ class UsersRepository:
             return cursor.lastrowid
 
     @staticmethod
-    def get_by_username(username: str) -> dict[str, Any] | None:
+    def get_by_username(username: str) -> UserAuthRecord | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -38,7 +69,10 @@ class UsersRepository:
                 "SELECT id, username, email, password_hash FROM users WHERE username = %s",
                 (username,),
             )
-            return cursor.fetchone()
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return cast(UserAuthRecord, row)
 
     @staticmethod
     def exists_by_username_or_email(username: str, email: str) -> bool:
@@ -53,7 +87,7 @@ class UsersRepository:
             return cursor.fetchone() is not None
 
     @staticmethod
-    def get_by_id(user_id: int) -> dict[str, Any] | None:
+    def get_by_id(user_id: int) -> UserRecord | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
