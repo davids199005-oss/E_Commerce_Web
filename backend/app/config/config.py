@@ -1,14 +1,18 @@
 from pathlib import Path
+from typing import ClassVar
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-ENV_FILE = PROJECT_ROOT / ".env"
+PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent.parent.parent
+ENV_FILE: Path = PROJECT_ROOT / ".env"
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=ENV_FILE, env_file_encoding="utf-8")
-    # MySQL Database Configuration
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        env_file=str(ENV_FILE),
+        env_file_encoding="utf-8",
+    )
+
     MYSQL_DATABASE: str
     MYSQL_PASSWORD: str
     MYSQL_ROOT_PASSWORD: str
@@ -16,18 +20,17 @@ class Settings(BaseSettings):
     MYSQL_PORT: int
     MYSQL_USER: str
 
-    # Redis Configuration
     REDIS_HOST: str
     REDIS_PORT: int
 
-    # JWT Configuration
     JWT_SECRET: str
     JWT_ALGORITHM: str
     JWT_EXPIRATION_TIME: int
 
-    # OpenAI API Key
     OPENAI_API_KEY: str
 
+    def __init__(self) -> None:
+        super().__init__()
 
-# Create a singleton instance of the settings
-settings = Settings()
+
+settings: Settings = Settings()

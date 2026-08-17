@@ -1,9 +1,12 @@
+from typing import cast
+
 from app.db.connection import get_connection
+from app.repositories.items_repository import ItemRecord
 
 
 class FavoritesRepository:
     @staticmethod
-    def get_favorites_by_user(user_id: int) -> list[dict]:
+    def get_favorites_by_user(user_id: int) -> list[ItemRecord]:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -17,7 +20,7 @@ class FavoritesRepository:
                         """,
                 (user_id,),
             )
-            return cursor.fetchall()
+            return cast(list[ItemRecord], cursor.fetchall())
 
     @staticmethod
     def is_favorite(user_id: int, item_id: int) -> bool:

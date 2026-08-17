@@ -1,9 +1,13 @@
+from tracemalloc import Traceback
+from mysql.connector.pooling import MySQLConnectionPool
+
+
 from app.config.config import settings
 from mysql.connector import pooling
 
 class ConnectionPool:
     def __init__(self) -> None:
-        self.pool = pooling.MySQLConnectionPool(
+        self.pool: MySQLConnectionPool = pooling.MySQLConnectionPool(
             pool_name="db_dev_pool",
             pool_size=5,
             host=settings.MYSQL_HOST,
@@ -17,14 +21,14 @@ class ConnectionPool:
         return self.pool.get_connection()
 
 
-connection_pool = ConnectionPool()
+connection_pool: ConnectionPool = ConnectionPool()
 
 class DatabaseConnection:
     def __enter__(self) -> pooling.PooledMySQLConnection:
         self.connection: pooling.PooledMySQLConnection = connection_pool.get_connection()
         return self.connection
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Traceback | None) -> None:
         if exc_type is not None:
             self.connection.rollback()
         self.connection.close()

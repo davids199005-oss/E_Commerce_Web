@@ -3,7 +3,7 @@ from app.db.connection import get_connection
 
 class UsersRepository:
     @staticmethod
-    def create_user(user: dict) -> int:
+    def create_user(user: dict[str, Any]) -> int:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -29,7 +29,7 @@ class UsersRepository:
             return cursor.lastrowid
 
     @staticmethod
-    def get_by_username(username: str) -> dict | None:
+    def get_by_username(username: str) -> dict[str, Any] | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -53,7 +53,7 @@ class UsersRepository:
             return cursor.fetchone() is not None
 
     @staticmethod
-    def get_by_id(user_id: int) -> dict | None:
+    def get_by_id(user_id: int) -> dict[str, Any] | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,

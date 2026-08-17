@@ -11,7 +11,7 @@ class AuthService:
         if UsersRepository.exists_by_username_or_email(user_data.username, user_data.email):
             raise ConflictError("Username or email already exists")
 
-        user_record: dict = {
+        user_record: dict[str, Any] = {
             "first_name":    user_data.first_name,
             "last_name":     user_data.last_name,
             "email":         user_data.email,
@@ -25,9 +25,9 @@ class AuthService:
 
     @staticmethod
     def login(username: str, password: str) -> str | None:
-        user = UsersRepository.get_by_username(username)
+        user: dict[str, Any] | None = UsersRepository.get_by_username(username)
         if user is None:
             return None
-        if not PasswordUtil.verify_password(password, user["password_hash"]):
+        if not PasswordUtil.verify_password(plain_password=password, hashed_password=user["password_hash"]):
             return None
-        return JwtUtil.create_token(user["id"])
+        return JwtUtil.create_token(user_id=user["id"])

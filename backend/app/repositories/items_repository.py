@@ -1,5 +1,22 @@
+from decimal import Decimal
+from typing import TypeAlias, TypedDict, cast
+
 from app.db.connection import get_connection
 from app.enums.filter_operator import FilterOperator
+
+QueryParam: TypeAlias = str | float | int
+
+
+class ItemRecord(TypedDict):
+    id: int
+    name: str
+    price_usd: Decimal
+    stock_qty: int
+
+
+class ItemWrite(TypedDict):
+    name: str
+    price_usd: float
 
 
 class ItemsRepository:
@@ -10,16 +27,16 @@ class ItemsRepository:
     }
 
     @staticmethod
-    def get_all_items() -> list[dict]:
+    def get_all_items() -> list[ItemRecord]:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute("SELECT id, name, price_usd, stock_qty FROM items")
-            return cursor.fetchall()
+            return cast(list[ItemRecord], cursor.fetchall())
 
     @staticmethod
-    def get_item_by_id(item_id: int) -> dict | None:
+    def get_item_by_id(item_id: int) -> ItemRecord | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -28,10 +45,13 @@ class ItemsRepository:
                 "SELECT id, name, price_usd, stock_qty FROM items WHERE id = %s",
                 (item_id,),
             )
-            return cursor.fetchone()
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return cast(ItemRecord, row)
 
     @staticmethod
-    def create_item(item: dict) -> int:
+    def create_item(item: ItemWrite) -> int:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -41,10 +61,13 @@ class ItemsRepository:
                 (item["name"], item["price_usd"]),
             )
             connection.commit()
-            return cursor.lastrowid
+            inserted_id = cursor.lastrowid
+            if inserted_id is None:
+                raise RuntimeError("Insert did not return an id")
+            return inserted_id
 
     @staticmethod
-    def update_item(item_id: int, item: dict) -> int:
+    def update_item(item_id: int, item: ItemWrite) -> int:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -73,9 +96,9 @@ class ItemsRepository:
             price_value: float | None = None,
             stock_op: FilterOperator | None = None,
             stock_value: int | None = None,
-    ) -> list[dict]:
+    ) -> list[ItemRecord]:
         conditions: list[str] = []
-        params: list = []
+        params: list[QueryParam] = []
 
         if names:
             name_conditions = " OR ".join(["name LIKE %s"] * len(names))
@@ -99,4 +122,4 @@ class ItemsRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(query, tuple(params))
-            return cursor.fetchall()
+            return cast(list[ItemRecord], cursor.fetchall())

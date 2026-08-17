@@ -1,7 +1,10 @@
+from decimal import Decimal
+from typing import cast
+
 from app.db.connection import get_connection
 from app.enums.order_status import OrderStatus
 from app.exceptions.app_exceptions import ConflictError, ValidationError
-from decimal import Decimal
+from app.models.order_schema import OrderRecord
 
 
 class OrdersRepository:
@@ -42,7 +45,7 @@ class OrdersRepository:
             return order_id
 
     @staticmethod
-    def get_order_by_id(order_id: int) -> dict | None:
+    def get_order_by_id(order_id: int) -> dict[str, Any] | None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -65,7 +68,7 @@ class OrdersRepository:
             return cursor.fetchone()
 
     @staticmethod
-    def get_orders_by_user(user_id: int) -> list[dict]:
+    def get_orders_by_user(user_id: int) -> list[OrderRecord]:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -85,10 +88,10 @@ class OrdersRepository:
                         """,
                 (user_id, OrderStatus.TEMP.value),
             )
-            return cursor.fetchall()
+            return cast(list[OrderRecord], cursor.fetchall())
 
     @staticmethod
-    def get_order_items(order_id: int) -> list[dict]:
+    def get_order_items(order_id: int) -> list[dict[str, Any]]:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,

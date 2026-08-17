@@ -1,3 +1,6 @@
+from typing import Any
+
+
 from datetime import datetime, timedelta, timezone
 
 import jwt
@@ -11,20 +14,20 @@ class JwtUtil:
             minutes=settings.JWT_EXPIRATION_TIME
         )
 
-        payload: dict = {
+        payload: dict[str, Any] = {
             "sub": str(user_id),
             "exp": expiration_time,
         }
 
         return jwt.encode(
-            payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
+            payload=payload, key=settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
         )
 
     @staticmethod
     def decode_token(token: str) -> int | None:
         try:
-            payload = jwt.decode(
-                token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+            payload: Any = jwt.decode(
+                jwt=token, key=settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
             )
             return int(payload["sub"])
         except jwt.InvalidTokenError:

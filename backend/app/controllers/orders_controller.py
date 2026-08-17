@@ -1,27 +1,31 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.routing import APIRouter
+
+
+from typing import Any
+from fastapi import Depends, HTTPException, status
 
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
 from app.middleware.auth_middleware import get_current_user_id
-from app.models.order_schema import OrderItemRequest
+from app.models.order_schema import OrderItemRequest, OrderRecord
 from app.services.orders_service import OrdersService
 
-router = APIRouter(prefix="/orders", tags=["Orders"])
+router: APIRouter = APIRouter(prefix="/orders", tags=["Orders"])
 
 
-@router.get("")
-def get_orders(user_id: int = Depends(get_current_user_id)) -> dict:
-    orders = OrdersService.get_user_orders(user_id)
+@router.get(path="")
+def get_orders(user_id: int = Depends(dependency=get_current_user_id)) -> dict[str, list[OrderRecord] | str]:
+    orders: list[OrderRecord] = OrdersService.get_user_orders(user_id)
     if not orders:
         return {"orders": [], "message": "You have no orders yet"}
     return {"orders": orders}
 
 
-@router.post("/items", status_code=status.HTTP_201_CREATED)
+@router.post(path="/items", status_code=status.HTTP_201_CREATED)
 def add_item(
-        request: OrderItemRequest, user_id: int = Depends(get_current_user_id)
-) -> dict:
+        request: OrderItemRequest, user_id: int = Depends(dependency=get_current_user_id)
+) -> dict[str, str | int]:
     try:
-        order_id = OrdersService.add_item(user_id, request.item_id, request.quantity)
+        order_id: int = OrdersService.add_item(user_id, request.item_id, request.quantity)
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ConflictError as e:
@@ -31,8 +35,8 @@ def add_item(
     return {"message": "Item added to order", "order_id": order_id}
 
 
-@router.delete("/items/{item_id}")
-def remove_item(item_id: int, user_id: int = Depends(get_current_user_id)) -> dict:
+@router.delete(path="/items/{item_id}")
+def remove_item(item_id: int, user_id: int = Depends(dependency=get_current_user_id)) -> dict[str, str]:
     try:
         OrdersService.remove_item(user_id, item_id)
     except NotFoundError as e:
@@ -40,8 +44,8 @@ def remove_item(item_id: int, user_id: int = Depends(get_current_user_id)) -> di
     return {"message": "Item removed from order"}
 
 
-@router.delete("/active")
-def delete_active_order(user_id: int = Depends(get_current_user_id)) -> dict:
+@router.delete(path="/active")
+def delete_active_order(user_id: int = Depends(dependency=get_current_user_id)) -> dict[str, str]:
     try:
         OrdersService.delete_active_order(user_id)
     except NotFoundError as e:
@@ -49,8 +53,8 @@ def delete_active_order(user_id: int = Depends(get_current_user_id)) -> dict:
     return {"message": "Order deleted"}
 
 
-@router.post("/purchase")
-def purchase(user_id: int = Depends(get_current_user_id)) -> dict:
+@router.post(path="/purchase")
+def purchase(user_id: int = Depends(dependency=get_current_user_id)) -> dict[str, str]:
     try:
         OrdersService.purchase(user_id)
     except NotFoundError as e:
@@ -62,10 +66,10 @@ def purchase(user_id: int = Depends(get_current_user_id)) -> dict:
     return {"message": "Order purchased successfully"}
 
 
-@router.get("/{order_id}")
+@router.get(path="/{order_id}")
 def get_order_details(
-        order_id: int, user_id: int = Depends(get_current_user_id)
-) -> dict:
+        order_id: int, user_id: int = Depends(dependency=get_current_user_id)
+) -> dict[str, dict[str, Any] | str]:
     try:
         return OrdersService.get_order_details(user_id, order_id)
     except NotFoundError as e:

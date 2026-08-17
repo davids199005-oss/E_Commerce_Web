@@ -1,4 +1,7 @@
+from typing import Any
+
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
+from app.models.order_schema import OrderRecord
 from app.repositories.items_repository import ItemsRepository
 from app.repositories.orders_repository import OrdersRepository
 from app.repositories.users_repository import UsersRepository
@@ -7,12 +10,12 @@ from app.services.items_service import ItemsService
 
 class OrdersService:
     @staticmethod
-    def get_user_orders(user_id: int) -> list[dict]:
+    def get_user_orders(user_id: int) -> list[OrderRecord]:
         return OrdersRepository.get_orders_by_user(user_id)
 
     @staticmethod
-    def get_order_details(user_id: int, order_id: int) -> dict:
-        order = OrdersRepository.get_order_by_id(order_id)
+    def get_order_details(user_id: int, order_id: int) -> dict[str, Any]:
+        order: dict[str, Any] | None = OrdersRepository.get_order_by_id(order_id)
         if order is None or order["user_id"] != user_id:
             raise NotFoundError("Order not found")
 
@@ -24,13 +27,13 @@ class OrdersService:
         if quantity < 1:
             raise ValidationError("Quantity must be at least 1")
 
-        item = ItemsRepository.get_item_by_id(item_id)
+        item: dict[str, Any] | None = ItemsRepository.get_item_by_id(item_id)
         if item is None:
             raise NotFoundError("Item not found")
 
-        order_id = OrdersRepository.get_active_order_id(user_id)
+        order_id: int | None = OrdersRepository.get_active_order_id(user_id)
 
-        quantity_in_order = (
+        quantity_in_order: int = (
             OrdersRepository.get_item_quantity_in_order(order_id, item_id)
             if order_id is not None
             else 0
@@ -43,20 +46,22 @@ class OrdersService:
             )
 
         if order_id is None:
-            user = UsersRepository.get_by_id(user_id)
+            user: dict[str, Any] | None = UsersRepository.get_by_id(user_id)
+            if user is None:
+                raise NotFoundError("User not found")
             order_id = OrdersRepository.create_temp_order(
-                user_id, user["country"], user["city"]
+                user_id, country=user["country"], city=user["city"]
             )
 
         OrdersRepository.add_item_to_order(
-            order_id, item_id, quantity, item["price_usd"]
+            order_id, item_id, quantity, unit_price=item["price_usd"]
         )
         OrdersRepository.recalculate_order_total(order_id)
         return order_id
 
     @staticmethod
     def remove_item(user_id: int, item_id: int) -> None:
-        order_id = OrdersRepository.get_active_order_id(user_id)
+        order_id: int | None = OrdersRepository.get_active_order_id(user_id)
         if order_id is None:
             raise NotFoundError("You have no active order")
 
@@ -72,7 +77,7 @@ class OrdersService:
 
     @staticmethod
     def delete_active_order(user_id: int) -> None:
-        order_id = OrdersRepository.get_active_order_id(user_id)
+        order_id: int | None = OrdersRepository.get_active_order_id(user_id)
         if order_id is None:
             raise NotFoundError("You have no active order")
 
@@ -80,7 +85,7 @@ class OrdersService:
 
     @staticmethod
     def purchase(user_id: int) -> None:
-        order_id = OrdersRepository.get_active_order_id(user_id)
+        order_id: int | None = OrdersRepository.get_active_order_id(user_id)
         if order_id is None:
             raise NotFoundError("You have no active order")
 

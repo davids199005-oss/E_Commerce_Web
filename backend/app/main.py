@@ -1,13 +1,15 @@
 from fastapi import FastAPI
-from app.controllers import auth_controller, favorites_controller, items_controller
+from app.controllers import auth_controller, favorites_controller, items_controller, orders_controller
 
-app = FastAPI(title="Ecommerce api")
+app = FastAPI(title="Ecommerce Shop API", prefix="shop")
 
+# Routers
 app.include_router(auth_controller.router)
 app.include_router(items_controller.router)
 app.include_router(favorites_controller.router)
+app.include_router(orders_controller.router)
 
-
-@app.get("/health")
-def health_check() -> dict:
+# Health check
+@app.get(path="/health")
+def health_check() -> dict[str, str]:
     return {"status": "Healthy"}

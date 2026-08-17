@@ -1,7 +1,9 @@
+from typing import cast
+
 from app.cache.redis_client import cache_client
 from app.enums.filter_operator import FilterOperator
-from app.repositories.items_repository import ItemsRepository
 from app.exceptions.app_exceptions import ValidationError
+from app.repositories.items_repository import ItemRecord, ItemsRepository
 
 ITEMS_CACHE_KEY = "items:all"
 ITEMS_CACHE_TTL_SECONDS = 300
@@ -9,12 +11,12 @@ ITEMS_CACHE_TTL_SECONDS = 300
 
 class ItemsService:
     @staticmethod
-    def get_all_items() -> list[dict]:
-        cache_items = cache_client.get_json(ITEMS_CACHE_KEY)
-        if cache_items is not None:
-            return cache_items
+    def get_all_items() -> list[ItemRecord]:
+        cache_items = cache_client.get_json(key=ITEMS_CACHE_KEY)
+        if isinstance(cache_items, list):
+            return cast(list[ItemRecord], cache_items)
         items = ItemsRepository.get_all_items()
-        cache_client.set_json(ITEMS_CACHE_KEY, items, ITEMS_CACHE_TTL_SECONDS)
+        cache_client.set_json(key=ITEMS_CACHE_KEY, value=items, ttl_seconds=ITEMS_CACHE_TTL_SECONDS)
         return items
 
     @staticmethod
@@ -28,7 +30,7 @@ class ItemsService:
             price_value: float | None = None,
             stock_op: FilterOperator | None = None,
             stock_value: int | None = None,
-    ) -> list[dict]:
+    ) -> list[ItemRecord]:
         if price_op is not None and price_value is None:
             raise ValidationError("price_value is required when price_op is provided")
 

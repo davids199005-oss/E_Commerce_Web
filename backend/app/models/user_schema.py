@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field
 
-# User Schema
+# Pydantic model for user creation
 class UserCreate(BaseModel):
     first_name: str = Field(min_length=1, max_length=100)
     last_name: str = Field(min_length=1, max_length=100)
@@ -14,6 +14,7 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8, max_length=72)
 
 
+# Pydantic model for user record
 class User(BaseModel):
     id: int
     first_name: str
@@ -26,6 +27,7 @@ class User(BaseModel):
     created_at: datetime
 
 
+# Pydantic model for user login
 class UserLogin(BaseModel):
     username: str
     password: str

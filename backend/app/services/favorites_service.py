@@ -1,11 +1,11 @@
 from app.exceptions.app_exceptions import ConflictError, NotFoundError
 from app.repositories.favorites_repository import FavoritesRepository
-from app.repositories.items_repository import ItemsRepository
+from app.repositories.items_repository import ItemRecord, ItemsRepository
 
 
 class FavoritesService:
     @staticmethod
-    def get_favorites(user_id: int) -> list[dict]:
+    def get_favorites(user_id: int) -> list[ItemRecord]:
         return FavoritesRepository.get_favorites_by_user(user_id)
 
     @staticmethod
