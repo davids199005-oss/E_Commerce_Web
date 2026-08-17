@@ -4,7 +4,6 @@ from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate) -> dict:
     try:

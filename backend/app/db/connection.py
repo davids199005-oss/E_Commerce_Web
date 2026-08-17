@@ -1,7 +1,6 @@
 from app.config.config import settings
 from mysql.connector import pooling
 
-
 class ConnectionPool:
     def __init__(self) -> None:
         self.pool = pooling.MySQLConnectionPool(
@@ -19,7 +18,6 @@ class ConnectionPool:
 
 
 connection_pool = ConnectionPool()
-
 
 class DatabaseConnection:
     def __enter__(self) -> pooling.PooledMySQLConnection:
