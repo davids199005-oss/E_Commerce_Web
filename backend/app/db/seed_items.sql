@@ -38,4 +38,7 @@ VALUES ('Sunglasses', 29.99, 25),
        ('Lego', 19.99, 100),
        ('Dog Collar', 12.99, 100),
        ('Phone Case', 19.99, 100),
+       ('Laptop Case', 19.99, 100),
+       ('Tenis Shoes', 19.99, 100),
+       ('Mosquito Repellent', 19.99, 100),
        ('Water Bottle', 11.25, 50);
