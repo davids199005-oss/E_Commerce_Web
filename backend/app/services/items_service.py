@@ -1,6 +1,7 @@
 from app.cache.redis_client import cache_client
 from app.enums.filter_operator import FilterOperator
 from app.repositories.items_repository import ItemsRepository
+from app.exceptions.app_exceptions import ValidationError
 
 ITEMS_CACHE_KEY = "items:all"
 ITEMS_CACHE_TTL_SECONDS = 300
@@ -29,10 +30,10 @@ class ItemsService:
             stock_value: int | None = None,
     ) -> list[dict]:
         if price_op is not None and price_value is None:
-            raise ValueError("price_value is required when price_op is provided")
+            raise ValidationError("price_value is required when price_op is provided")
 
         if stock_op is not None and stock_value is None:
-            raise ValueError("stock_value is required when stock_op is provided")
+            raise ValidationError("stock_value is required when stock_op is provided")
 
         return ItemsRepository.search_items(
             names=names,

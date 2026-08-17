@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from app.enums.filter_operator import FilterOperator
 from app.services.items_service import ItemsService
+from app.exceptions.app_exceptions import ValidationError
 
 router = APIRouter(prefix="/items", tags=["Items"])
 
@@ -31,7 +32,7 @@ def get_items(
             if has_filters
             else ItemsService.get_all_items()
         )
-    except ValueError as e:
+    except ValidationError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     if not items:

@@ -2,13 +2,14 @@ from app.models.user_schema import UserCreate
 from app.repositories.users_repository import UsersRepository
 from app.utils.jwt_util import JwtUtil
 from app.utils.password_util import PasswordUtil
+from app.exceptions.app_exceptions import ConflictError
 
 
 class AuthService:
     @staticmethod
     def register(user_data: UserCreate) -> int:
         if UsersRepository.exists_by_username_or_email(user_data.username, user_data.email):
-            raise ValueError("Username or email already exists")
+            raise ConflictError("Username or email already exists")
 
         user_record: dict = {
             "first_name":    user_data.first_name,

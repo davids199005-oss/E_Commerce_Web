@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from app.models.user_schema import UserCreate, UserLogin
 from app.services.auth_service import AuthService
+from app.exceptions.app_exceptions import ConflictError
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -8,7 +9,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def register(user_data: UserCreate) -> dict:
     try:
         AuthService.register(user_data)
-    except ValueError as e:
+    except ConflictError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     return {"message": "User registered successfully"}
 

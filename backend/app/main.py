@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from app.controllers import auth_controller, items_controller
+from app.controllers import auth_controller, favorites_controller, items_controller
 
 app = FastAPI(title="Ecommerce api")
 
 app.include_router(auth_controller.router)
 app.include_router(items_controller.router)
+app.include_router(favorites_controller.router)
 
 
 @app.get("/health")
