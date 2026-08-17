@@ -11,6 +11,6 @@ app.include_router(favorites_controller.router)
 app.include_router(orders_controller.router)
 
 # Health check
-@app.get(path="/health")
+@app.get(path="/")
 def health_check() -> dict[str, str]:
     return {"status": "Healthy"}
