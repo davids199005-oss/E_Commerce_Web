@@ -1,8 +1,7 @@
-from fastapi.security.http import HTTPBearer
 
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.utils.jwt_util import JwtUtil
 

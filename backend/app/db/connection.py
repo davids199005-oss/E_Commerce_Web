@@ -1,4 +1,4 @@
-from tracemalloc import Traceback
+from types import TracebackType
 from mysql.connector.pooling import MySQLConnectionPool
 
 
@@ -28,7 +28,7 @@ class DatabaseConnection:
         self.connection: pooling.PooledMySQLConnection = connection_pool.get_connection()
         return self.connection
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: Traceback | None) -> None:
+    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
         if exc_type is not None:
             self.connection.rollback()
         self.connection.close()

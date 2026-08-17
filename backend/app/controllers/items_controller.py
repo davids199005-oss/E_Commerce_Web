@@ -1,7 +1,4 @@
-from fastapi.routing import APIRouter
-
-
-from fastapi import HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.enums.filter_operator import FilterOperator
 from app.exceptions.app_exceptions import ValidationError

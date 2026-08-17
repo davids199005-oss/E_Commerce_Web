@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import cast
+from typing import Any, cast
 
 from app.db.connection import get_connection
 from app.enums.order_status import OrderStatus
@@ -35,7 +35,9 @@ class OrdersRepository:
                         """,
                 (user_id, country, city, OrderStatus.TEMP.value),
             )
-            order_id = cursor.lastrowid
+            order_id: int | None = cursor.lastrowid
+            if order_id is None:
+                raise RuntimeError("Insert did not return an id")
 
             cursor.execute(
                 "INSERT INTO user_active_orders (user_id, order_id) VALUES (%s, %s)",
@@ -155,7 +157,10 @@ class OrdersRepository:
                 "SELECT COUNT(*) AS item_count FROM order_items WHERE order_id = %s",
                 (order_id,),
             )
-            return cursor.fetchone()["item_count"]
+            row: dict[str, Any] | None = cursor.fetchone()
+            if row is None:
+                raise RuntimeError("Select did not return a row")
+            return cast(int, row["item_count"])
 
     @staticmethod
     def delete_order(order_id: int) -> None:

@@ -16,7 +16,7 @@ class ItemRecord(TypedDict):
 
 class ItemWrite(TypedDict):
     name: str
-    price_usd: float
+    price_usd: Decimal
 
 
 class ItemsRepository:
@@ -61,7 +61,7 @@ class ItemsRepository:
                 (item["name"], item["price_usd"]),
             )
             connection.commit()
-            inserted_id = cursor.lastrowid
+            inserted_id: int | None = cursor.lastrowid
             if inserted_id is None:
                 raise RuntimeError("Insert did not return an id")
             return inserted_id
@@ -101,7 +101,7 @@ class ItemsRepository:
         params: list[QueryParam] = []
 
         if names:
-            name_conditions = " OR ".join(["name LIKE %s"] * len(names))
+            name_conditions: str = " OR ".join(["name LIKE %s"] * len(names))
             conditions.append(f"({name_conditions})")
             params.extend([f"%{name}%" for name in names])
 

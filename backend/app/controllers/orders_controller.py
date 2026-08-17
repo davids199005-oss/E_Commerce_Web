@@ -1,5 +1,4 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.routing import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
 from app.middleware.auth_middleware import get_current_user_id

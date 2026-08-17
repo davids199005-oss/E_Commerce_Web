@@ -1,5 +1,4 @@
-from fastapi.routing import APIRouter
-from fastapi import HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from app.models.user_schema import UserCreate, UserLogin
 from app.services.auth_service import AuthService
 from app.exceptions.app_exceptions import ConflictError

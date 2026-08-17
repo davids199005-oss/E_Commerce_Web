@@ -1,8 +1,5 @@
-from backend.app.models.order_schema import OrderByIdRecord
-
-
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
-from app.models.order_schema import OrderDetailRecord, OrderRecord
+from app.models.order_schema import OrderByIdRecord, OrderDetailRecord, OrderRecord
 from app.repositories.items_repository import ItemRecord, ItemsRepository
 from app.repositories.orders_repository import OrdersRepository
 from app.repositories.users_repository import UserRecord, UsersRepository

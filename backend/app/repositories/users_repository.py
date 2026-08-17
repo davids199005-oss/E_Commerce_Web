@@ -57,7 +57,10 @@ class UsersRepository:
                 ),
             )
             connection.commit()
-            return cursor.lastrowid
+            inserted_id: int | None = cursor.lastrowid
+            if inserted_id is None:
+                raise RuntimeError("Insert did not return an id")
+            return inserted_id
 
     @staticmethod
     def get_by_username(username: str) -> UserAuthRecord | None:
@@ -108,7 +111,10 @@ class UsersRepository:
                         """,
                 (user_id,),
             )
-            return cursor.fetchone()
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return cast(UserRecord, row)
 
     @staticmethod
     def delete_user(user_id: int) -> int:
