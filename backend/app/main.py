@@ -8,4 +8,4 @@ app.include_router(auth_controller.router)
 
 @app.get("/health")
 def health_check() -> dict:
-    return {"status": "ok"}
+    return {"status": "Healthy"}

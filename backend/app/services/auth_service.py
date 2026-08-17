@@ -11,16 +11,16 @@ class AuthService:
             raise ValueError("Username or email already exists")
 
         user_record: dict = {
-            "first_name": user_data.first_name,
-            "last_name": user_data.last_name,
-            "email": user_data.email,
-            "phone": user_data.phone,
-            "country": user_data.country,
-            "city": user_data.city,
-            "username": user_data.username,
+            "first_name":    user_data.first_name,
+            "last_name":     user_data.last_name,
+            "email":         user_data.email,
+            "phone":         user_data.phone,
+            "country":       user_data.country,
+            "city":          user_data.city,
+            "username":      user_data.username,
             "password_hash": PasswordUtil.hash_password(user_data.password)
         }
-        return  UsersRepository.create_user(user_record)
+        return UsersRepository.create_user(user_record)
 
     @staticmethod
     def login(username: str, password: str) -> str | None:
