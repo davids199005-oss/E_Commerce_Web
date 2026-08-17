@@ -4,6 +4,7 @@ from app.repositories.orders_repository import OrdersRepository
 from app.repositories.users_repository import UsersRepository
 from app.services.items_service import ItemsService
 
+
 class OrdersService:
     @staticmethod
     def get_user_orders(user_id: int) -> list[dict]:
@@ -27,13 +28,20 @@ class OrdersService:
         if item is None:
             raise NotFoundError("Item not found")
 
-        if item["stock_qty"] < quantity:
+        order_id = OrdersRepository.get_active_order_id(user_id)
+
+        quantity_in_order = (
+            OrdersRepository.get_item_quantity_in_order(order_id, item_id)
+            if order_id is not None
+            else 0
+        )
+
+        if quantity_in_order + quantity > item["stock_qty"]:
             raise ConflictError(
                 f"Not enough stock for item '{item['name']}'. "
-                f"Available: {item['stock_qty']}"
+                f"Available: {item['stock_qty']}, already in your order: {quantity_in_order}"
             )
 
-        order_id = OrdersRepository.get_active_order_id(user_id)
         if order_id is None:
             user = UsersRepository.get_by_id(user_id)
             order_id = OrdersRepository.create_temp_order(
