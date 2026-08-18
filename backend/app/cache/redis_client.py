@@ -1,11 +1,15 @@
 from decimal import Decimal
 import json
-from typing import Any
+from typing import Any, Protocol, cast
 
 import redis
-from redis.client import Redis
+from redis.client import Pipeline, Redis
 
 from app.config.config import settings
+
+
+class _PipelineFactory(Protocol):
+    def pipeline(self, transaction: bool = True) -> Pipeline: ...
 
 
 def _json_default(value: object) -> float:
@@ -33,6 +37,18 @@ class CacheClient:
 
     def delete(self, key: str) -> None:
         self.client.delete(key)
+
+    def increment_with_expiry(self, key: str, amount: int, ttl_seconds: int) -> int:
+        client: _PipelineFactory = cast(_PipelineFactory, self.client)
+        with client.pipeline() as pipeline:
+            pipeline.incr(name=key, amount=amount)
+            pipeline.expire(name=key, time=ttl_seconds, nx=True)
+            results: list[Any] = pipeline.execute()
+            return int(results[0])
+
+    def get_int(self, key: str) -> int:
+        value: bytes | str | None = self.client.get(name=key)
+        return int(value) if value is not None else 0
 
 
 cache_client: CacheClient = CacheClient()
