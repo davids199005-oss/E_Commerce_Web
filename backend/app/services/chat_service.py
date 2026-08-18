@@ -29,11 +29,12 @@ class ChatService:
 
     @staticmethod
     def ask(user_id: int, message: str) -> dict[str, str | int]:
-        used: int = ChatLimitService.consume_prompt(user_id)
+        ChatLimitService.ensure_can_prompt(user_id)
         answer: str = openai_client.ask(
             instructions=ChatService._build_instructions(),
             user_message=message,
         )
+        used: int = ChatLimitService.consume_prompt(user_id)
         return {
             "answer": answer,
             "prompts_used": used,
