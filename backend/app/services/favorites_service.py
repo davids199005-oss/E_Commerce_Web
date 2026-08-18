@@ -20,6 +20,6 @@ class FavoritesService:
 
     @staticmethod
     def remove_favorite(user_id: int, item_id: int) -> None:
-        removed_rows = FavoritesRepository.remove_favorite(user_id, item_id)
+        removed_rows: int = FavoritesRepository.remove_favorite(user_id, item_id)
         if removed_rows == 0:
             raise NotFoundError("Item is not in favorites")

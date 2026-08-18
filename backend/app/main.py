@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.controllers import auth_controller, favorites_controller, items_controller, orders_controller
+from app.controllers import auth_controller, favorites_controller, items_controller, orders_controller, chat_controller
 
 app: FastAPI = FastAPI(title="Ecommerce Shop API")
 
@@ -9,6 +9,7 @@ app.include_router(auth_controller.router)
 app.include_router(items_controller.router)
 app.include_router(favorites_controller.router)
 app.include_router(orders_controller.router)
+app.include_router(chat_controller.router)
 
 # Health check
 @app.get(path="/")
