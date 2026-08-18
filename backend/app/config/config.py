@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     JWT_EXPIRATION_TIME: int
 
     OPENAI_API_KEY: str
+    OPENAI_MODEL: str
 
     def __init__(self) -> None:
         super().__init__()
