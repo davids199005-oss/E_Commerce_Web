@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.exceptions.app_exceptions import ConflictError, NotFoundError
 from app.middleware.auth_middleware import get_current_user_id
-from app.repositories.items_repository import ItemRecord
+from app.models.item_schema import ItemRecord
 from app.services.favorites_service import FavoritesService
 
 router: APIRouter = APIRouter(prefix="/favorites", tags=["Favorites"])

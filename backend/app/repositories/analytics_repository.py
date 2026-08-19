@@ -1,17 +1,8 @@
-from datetime import datetime
-from decimal import Decimal
-from typing import TypedDict, cast
+from typing import cast
 
 from app.db.connection import get_connection
 from app.enums.order_status import OrderStatus
-
-
-class ChurnFeaturesRaw(TypedDict):
-    account_age_days: int
-    orders_count: int
-    total_spent: Decimal
-    favorites_count: int
-    last_order_at: datetime | None
+from app.models.churn_schema import ChurnFeaturesRaw
 
 
 class AnalyticsRepository:

@@ -1,36 +1,20 @@
-from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
-from typing import Protocol, TypedDict, cast
+from typing import Protocol, cast
 
 import joblib  # pyright: ignore[reportMissingTypeStubs]
 import pandas as pd
 
 from app.config.config import PROJECT_ROOT
 from app.exceptions.app_exceptions import NotFoundError, ServiceUnavailableError
-from app.repositories.analytics_repository import AnalyticsRepository, ChurnFeaturesRaw
+from app.models.churn_schema import ChurnFeaturesRaw, ChurnModel, ChurnPrediction
+from app.repositories.analytics_repository import AnalyticsRepository
 
 MODEL_PATH = PROJECT_ROOT / "ml" / "model" / "churn_model.joblib"
 
 
-class _ChurnPipeline(Protocol):
-    def predict_proba(self, x: pd.DataFrame) -> Sequence[Sequence[float]]: ...
-
-
-class ChurnModel(TypedDict):
-    pipeline: _ChurnPipeline
-    feature_columns: list[str]
-
-
 class _Joblib(Protocol):
     def load(self, filename: Path) -> ChurnModel: ...
-
-
-class ChurnPrediction(TypedDict):
-    user_id: int
-    churn_probability: float
-    will_churn: bool
-    features: dict[str, float]
 
 
 class ChurnService:

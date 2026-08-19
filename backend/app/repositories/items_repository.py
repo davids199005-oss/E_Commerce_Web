@@ -1,22 +1,10 @@
-from decimal import Decimal
-from typing import TypeAlias, TypedDict, cast
+from typing import TypeAlias, cast
 
 from app.db.connection import get_connection
 from app.enums.filter_operator import FilterOperator
+from app.models.item_schema import ItemRecord, ItemWrite
 
 QueryParam: TypeAlias = str | float | int
-
-
-class ItemRecord(TypedDict):
-    id: int
-    name: str
-    price_usd: Decimal
-    stock_qty: int
-
-
-class ItemWrite(TypedDict):
-    name: str
-    price_usd: Decimal
 
 
 class ItemsRepository:

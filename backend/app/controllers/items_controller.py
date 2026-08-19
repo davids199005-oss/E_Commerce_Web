@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from app.enums.filter_operator import FilterOperator
 from app.exceptions.app_exceptions import ValidationError
-from app.repositories.items_repository import ItemRecord
+from app.models.item_schema import ItemRecord
 from app.services.items_service import ItemsService
 
 router: APIRouter = APIRouter(prefix="/items", tags=["Items"])

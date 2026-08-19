@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TypedDict
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -31,3 +32,33 @@ class User(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
+
+
+class UserRecord(TypedDict):
+    id: int
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    phone: str
+    country: str
+    city: str
+    created_at: datetime
+
+
+class UserAuthRecord(TypedDict):
+    id: int
+    username: str
+    email: str
+    password_hash: str
+
+
+class UserWrite(TypedDict):
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    country: str
+    city: str
+    username: str
+    password_hash: str

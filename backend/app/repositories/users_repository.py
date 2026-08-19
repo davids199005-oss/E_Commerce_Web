@@ -1,36 +1,8 @@
-from datetime import datetime
-from typing import TypedDict, cast
+from typing import cast
 
 from app.db.connection import get_connection
+from app.models.user_schema import UserAuthRecord, UserRecord, UserWrite
 
-
-class UserRecord(TypedDict):
-    id: int
-    username: str
-    email: str
-    first_name: str
-    last_name: str
-    phone: str
-    country: str
-    city: str
-    created_at: datetime
-
-
-class UserAuthRecord(TypedDict):
-    id: int
-    username: str
-    email: str
-    password_hash: str
-
-class UserWrite(TypedDict):
-    first_name: str
-    last_name: str
-    email: str
-    phone: str
-    country: str
-    city: str
-    username: str
-    password_hash: str
 
 class UsersRepository:
     @staticmethod

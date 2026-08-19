@@ -1,8 +1,10 @@
 from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
+from app.models.item_schema import ItemRecord
 from app.models.order_schema import OrderByIdRecord, OrderDetailRecord, OrderRecord
-from app.repositories.items_repository import ItemRecord, ItemsRepository
+from app.models.user_schema import UserRecord
+from app.repositories.items_repository import ItemsRepository
 from app.repositories.orders_repository import OrdersRepository
-from app.repositories.users_repository import UserRecord, UsersRepository
+from app.repositories.users_repository import UsersRepository
 from app.services.items_service import ItemsService
 
 

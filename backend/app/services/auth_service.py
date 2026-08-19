@@ -1,5 +1,5 @@
-from app.models.user_schema import UserCreate
-from app.repositories.users_repository import UserAuthRecord, UserWrite, UsersRepository
+from app.models.user_schema import UserAuthRecord, UserCreate, UserWrite
+from app.repositories.users_repository import UsersRepository
 from app.utils.jwt_util import JwtUtil
 from app.utils.password_util import PasswordUtil
 from app.exceptions.app_exceptions import ConflictError

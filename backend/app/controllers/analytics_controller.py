@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.exceptions.app_exceptions import NotFoundError, ServiceUnavailableError
 from app.middleware.auth_middleware import get_current_user_id
-from app.services.churn_service import ChurnPrediction, ChurnService
+from app.models.churn_schema import ChurnPrediction
+from app.services.churn_service import ChurnService
 
 router: APIRouter = APIRouter(prefix="/analytics", tags=["Analytics"])
 

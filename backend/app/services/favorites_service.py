@@ -1,6 +1,7 @@
 from app.exceptions.app_exceptions import ConflictError, NotFoundError
+from app.models.item_schema import ItemRecord
 from app.repositories.favorites_repository import FavoritesRepository
-from app.repositories.items_repository import ItemRecord, ItemsRepository
+from app.repositories.items_repository import ItemsRepository
 
 
 class FavoritesService:

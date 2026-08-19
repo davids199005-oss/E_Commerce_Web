@@ -1,7 +1,7 @@
 from typing import cast
 
 from app.db.connection import get_connection
-from app.repositories.items_repository import ItemRecord
+from app.models.item_schema import ItemRecord
 
 
 class FavoritesRepository:

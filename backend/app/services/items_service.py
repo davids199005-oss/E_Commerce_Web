@@ -3,7 +3,8 @@ from typing import Any, cast
 from app.cache.redis_client import cache_client
 from app.enums.filter_operator import FilterOperator
 from app.exceptions.app_exceptions import ValidationError
-from app.repositories.items_repository import ItemRecord, ItemsRepository
+from app.models.item_schema import ItemRecord
+from app.repositories.items_repository import ItemsRepository
 
 ITEMS_CACHE_KEY = "items:all"
 ITEMS_CACHE_TTL_SECONDS = 300
