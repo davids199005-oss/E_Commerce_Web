@@ -1,22 +1,65 @@
 from typing import Any, cast
 
 from app.cache.redis_client import cache_client
-from app.enums.filter_operator import FilterOperator
-from app.exceptions.app_exceptions import ValidationError
-from app.models.item_schema import ItemRecord
-from app.repositories.items_repository import ItemsRepository
 from app.config.config import settings
-
+from app.enums.filter_operator import FilterOperator
+from app.exceptions.app_exceptions import NotFoundError, ValidationError
+from app.models.item_schema import ItemCreate, ItemPatch, ItemRecord, ItemUpdate, ItemWrite
+from app.repositories.items_repository import ItemsRepository
 
 
 class ItemsService:
     @staticmethod
+    def _to_write(item: ItemCreate) -> ItemWrite:
+        return {
+            "name": item.name,
+            "price_usd": item.price_usd,
+            "stock_qty": item.stock_qty,
+        }
+
+    @staticmethod
+    def add_item(item: ItemCreate) -> int:
+        item_id: int = ItemsRepository.create_item(ItemsService._to_write(item))
+        ItemsService.delete_all_items_cache()
+        return item_id
+
+    @staticmethod
+    def update_item(item_id: int, item: ItemUpdate) -> None:
+        fields: ItemPatch = item.model_dump(exclude_unset=True)
+        if not fields:
+            raise ValidationError("At least one field is required")
+        if ItemsRepository.get_item_by_id(item_id) is None:
+            raise NotFoundError("Item not found")
+        ItemsRepository.update_item(item_id, fields)
+        ItemsService.delete_all_items_cache()
+
+    @staticmethod
+    def delete_item(item_id: int) -> None:
+        deleted_rows: int = ItemsRepository.delete_item(item_id)
+        if deleted_rows == 0:
+            raise NotFoundError("Item not found")
+        ItemsService.delete_all_items_cache()
+
+    @staticmethod
+    def get_item_by_id(item_id: int) -> ItemRecord:
+        item: ItemRecord | None = ItemsRepository.get_item_by_id(item_id)
+        if item is None:
+            raise NotFoundError("Item not found")
+        return item
+
+    @staticmethod
     def get_all_items() -> list[ItemRecord]:
-        cache_items: list[dict[str, Any]] | dict[str, Any] | None = cache_client.get_json(key=settings.ITEMS_CACHE_KEY)
+        cache_items: list[dict[str, Any]] | dict[str, Any] | None = cache_client.get_json(
+            key=settings.ITEMS_CACHE_KEY
+        )
         if isinstance(cache_items, list):
             return cast(list[ItemRecord], cache_items)
         items: list[ItemRecord] = ItemsRepository.get_all_items()
-        cache_client.set_json(key=settings.ITEMS_CACHE_KEY, value=items, ttl_seconds=settings.ITEMS_CACHE_TTL_SECONDS)
+        cache_client.set_json(
+            key=settings.ITEMS_CACHE_KEY,
+            value=items,
+            ttl_seconds=settings.ITEMS_CACHE_TTL_SECONDS,
+        )
         return items
 
     @staticmethod

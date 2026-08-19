@@ -5,6 +5,7 @@ from app.exceptions.app_exceptions import (
     AppError,
     BadRequestError,
     ConflictError,
+    ForbiddenError,
     NotFoundError,
     RateLimitError,
     ServiceUnavailableError,
@@ -18,6 +19,7 @@ ERROR_STATUS_CODES: dict[type[AppError], int] = {
     RateLimitError: status.HTTP_429_TOO_MANY_REQUESTS,
     ServiceUnavailableError: status.HTTP_503_SERVICE_UNAVAILABLE,
     BadRequestError: status.HTTP_400_BAD_REQUEST,
+    ForbiddenError: status.HTTP_403_FORBIDDEN,
 }
 
 

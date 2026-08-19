@@ -1,8 +1,8 @@
+from app.exceptions.app_exceptions import ConflictError
 from app.models.user_schema import UserAuthRecord, UserCreate, UserWrite
 from app.repositories.users_repository import UsersRepository
 from app.utils.jwt_util import JwtUtil
 from app.utils.password_util import PasswordUtil
-from app.exceptions.app_exceptions import ConflictError, NotFoundError
 
 
 class AuthService:
@@ -31,9 +31,3 @@ class AuthService:
         if not PasswordUtil.verify_password(plain_password=password, hashed_password=user["password_hash"]):
             return None
         return JwtUtil.create_token(user_id=user["id"])
-
-    @staticmethod
-    def delete_account(user_id: int) -> None:
-        deleted_rows: int = UsersRepository.delete_user(user_id=user_id)
-        if deleted_rows == 0:
-            raise NotFoundError("User not found")

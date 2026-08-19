@@ -34,6 +34,16 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    first_name: str | None = Field(default=None, min_length=1, max_length=100)
+    last_name: str | None = Field(default=None, min_length=1, max_length=100)
+    email: EmailStr | None = Field(default=None, min_length=1, max_length=255)
+    phone: str | None = Field(default=None, min_length=1, max_length=50)
+    country: str | None = Field(default=None, min_length=1, max_length=100)
+    city: str | None = Field(default=None, min_length=1, max_length=100)
+    username: str | None = Field(default=None, min_length=1, max_length=100)
+
+
 class UserRecord(TypedDict):
     id: int
     username: str
@@ -62,3 +72,13 @@ class UserWrite(TypedDict):
     city: str
     username: str
     password_hash: str
+
+
+class UserProfileWrite(TypedDict, total=False):
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    country: str
+    city: str
+    username: str

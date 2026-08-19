@@ -1,11 +1,13 @@
+from decimal import Decimal
 from typing import TypeAlias, cast
 
 from app.db.connection import get_connection
 from app.enums.filter_operator import FilterOperator
 from app.enums.operator_sql import OPERATOR_SQL
-from app.models.item_schema import ItemRecord, ItemWrite
+from app.models.item_schema import ItemPatch, ItemRecord, ItemWrite
 
 QueryParam: TypeAlias = str | float | int
+_ITEM_PATCH_COLUMNS: frozenset[str] = frozenset({"name", "price_usd", "stock_qty"})
 
 
 class ItemsRepository:
@@ -40,8 +42,8 @@ class ItemsRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                "INSERT INTO items (name, price_usd) VALUES (%s, %s)",
-                (item["name"], item["price_usd"]),
+                "INSERT INTO items (name, price_usd, stock_qty) VALUES (%s, %s, %s)",
+                (item["name"], item["price_usd"], item["stock_qty"]),
             )
             connection.commit()
             inserted_id: int | None = cursor.lastrowid
@@ -50,14 +52,26 @@ class ItemsRepository:
             return inserted_id
 
     @staticmethod
-    def update_item(item_id: int, item: ItemWrite) -> int:
+    def update_item(item_id: int, item: ItemPatch) -> int:
+        if not item:
+            return 0
+
+        assignments: list[str] = [
+            f"{column} = %s" for column in item if column in _ITEM_PATCH_COLUMNS
+        ]
+        if not assignments:
+            return 0
+        params: list[str | Decimal | int] = [
+            item[column] for column in item if column in _ITEM_PATCH_COLUMNS
+        ]
+        params.append(item_id)
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                "UPDATE items SET name = %s, price_usd = %s WHERE id = %s",
-                (item["name"], item["price_usd"], item_id),
+                f"UPDATE items SET {', '.join(assignments)} WHERE id = %s",
+                tuple(params),
             )
             connection.commit()
             return cursor.rowcount

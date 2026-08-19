@@ -24,3 +24,7 @@ class RateLimitError(AppError):
 
 class BadRequestError(AppError):
     pass
+
+
+class ForbiddenError(AppError):
+    pass

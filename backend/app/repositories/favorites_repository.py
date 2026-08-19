@@ -58,3 +58,12 @@ class FavoritesRepository:
             )
             connection.commit()
             return cursor.rowcount
+
+    @staticmethod
+    def delete_all_for_user(user_id: int) -> None:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute("DELETE FROM favorites WHERE user_id = %s", (user_id,))
+            connection.commit()
