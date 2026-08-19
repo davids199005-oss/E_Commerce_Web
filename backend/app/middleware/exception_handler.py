@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 
 from app.exceptions.app_exceptions import (
     AppError,
-    BadRequestError,
     ConflictError,
     ForbiddenError,
     NotFoundError,
@@ -18,7 +17,6 @@ ERROR_STATUS_CODES: dict[type[AppError], int] = {
     ValidationError: status.HTTP_400_BAD_REQUEST,
     RateLimitError: status.HTTP_429_TOO_MANY_REQUESTS,
     ServiceUnavailableError: status.HTTP_503_SERVICE_UNAVAILABLE,
-    BadRequestError: status.HTTP_400_BAD_REQUEST,
     ForbiddenError: status.HTTP_403_FORBIDDEN,
 }
 

@@ -90,7 +90,12 @@ class OrdersService:
                 f"Available: {item['stock_qty']}"
             )
 
-        OrdersRepository.set_item_quantity(order_id, item_id, quantity)
+        updated_rows: int = OrdersRepository.set_item_quantity(
+            order_id, item_id, quantity
+        )
+        if updated_rows == 0:
+            raise NotFoundError("Item is not in your order")
+
         OrdersRepository.recalculate_order_total(order_id)
 
     @staticmethod

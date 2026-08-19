@@ -1,11 +1,6 @@
 from typing import cast
 
-from app.exceptions.app_exceptions import (
-    BadRequestError,
-    ConflictError,
-    NotFoundError,
-    ValidationError,
-)
+from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
 from app.models.user_schema import (
     PasswordChange,
     UserAuthRecord,
@@ -57,7 +52,10 @@ class UsersService:
             plain_password=passwords.current_password,
             hashed_password=user["password_hash"],
         ):
-            raise BadRequestError("Current password is incorrect")
+            raise ValidationError("Current password is incorrect")
+
+        if passwords.new_password == passwords.current_password:
+            raise ValidationError("New password must be different from the current password")
 
         UsersRepository.update_password(
             user_id,
