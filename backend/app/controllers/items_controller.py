@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Query
 
 from app.enums.filter_operator import FilterOperator
-from app.exceptions.app_exceptions import ValidationError
 from app.models.item_schema import ItemRecord
 from app.services.items_service import ItemsService
 
@@ -21,20 +20,17 @@ def get_items(
         for value in (names, price_op, price_value, stock_op, stock_value)
     )
 
-    try:
-        items: list[ItemRecord] = (
-            ItemsService.search_items(
-                names=names,
-                price_op=price_op,
-                price_value=price_value,
-                stock_op=stock_op,
-                stock_value=stock_value,
-            )
-            if has_filters
-            else ItemsService.get_all_items()
+    items: list[ItemRecord] = (
+        ItemsService.search_items(
+            names=names,
+            price_op=price_op,
+            price_value=price_value,
+            stock_op=stock_op,
+            stock_value=stock_value,
         )
-    except ValidationError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        if has_filters
+        else ItemsService.get_all_items()
+    )
 
     if not items:
         return {"items": [], "message": "No items found matching your search"}
