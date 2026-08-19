@@ -11,8 +11,8 @@ CREATE TABLE users
     city          VARCHAR(100) NOT NULL,
     username      VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    is_admin      BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_admin      BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE TABLE items
 (
@@ -21,7 +21,7 @@ CREATE TABLE items
     price_usd  DECIMAL(10, 2) NOT NULL,
     stock_qty  INT            NOT NULL DEFAULT 0,
     created_at TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
-    image_url  VARCHAR(500) NOT NULL,
+    image_url  VARCHAR(500) DEFAULT NULL,
     CHECK (price_usd >= 0),
     CHECK (stock_qty >= 0)
 );

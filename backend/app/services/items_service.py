@@ -5,24 +5,23 @@ from app.enums.filter_operator import FilterOperator
 from app.exceptions.app_exceptions import ValidationError
 from app.models.item_schema import ItemRecord
 from app.repositories.items_repository import ItemsRepository
+from app.config.config import settings
 
-ITEMS_CACHE_KEY = "items:all"
-ITEMS_CACHE_TTL_SECONDS = 300
 
 
 class ItemsService:
     @staticmethod
     def get_all_items() -> list[ItemRecord]:
-        cache_items: list[dict[str, Any]] | dict[str, Any] | None = cache_client.get_json(key=ITEMS_CACHE_KEY)
+        cache_items: list[dict[str, Any]] | dict[str, Any] | None = cache_client.get_json(key=settings.ITEMS_CACHE_KEY)
         if isinstance(cache_items, list):
             return cast(list[ItemRecord], cache_items)
         items: list[ItemRecord] = ItemsRepository.get_all_items()
-        cache_client.set_json(key=ITEMS_CACHE_KEY, value=items, ttl_seconds=ITEMS_CACHE_TTL_SECONDS)
+        cache_client.set_json(key=settings.ITEMS_CACHE_KEY, value=items, ttl_seconds=settings.ITEMS_CACHE_TTL_SECONDS)
         return items
 
     @staticmethod
     def delete_all_items_cache() -> None:
-        cache_client.delete(key=ITEMS_CACHE_KEY)
+        cache_client.delete(key=settings.ITEMS_CACHE_KEY)
 
     @staticmethod
     def search_items(

@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     # Redis Configuration
     REDIS_HOST: str
     REDIS_PORT: int
+    ITEMS_CACHE_KEY: str 
+    ITEMS_CACHE_TTL_SECONDS: int
 
     # JWT Configuration
     JWT_SECRET: str

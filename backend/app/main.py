@@ -43,7 +43,7 @@ app.add_middleware(
 app.add_exception_handler(exc_class_or_status_code=AppError, handler=app_error_handler)
 
 
-# Routers
+# API Routers
 app.include_router(auth_controller.router)
 app.include_router(items_controller.router)
 app.include_router(favorites_controller.router)
