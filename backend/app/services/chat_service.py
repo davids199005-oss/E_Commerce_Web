@@ -2,6 +2,7 @@ from app.chat.openai_client import openai_client
 from app.models.item_schema import ItemRecord
 from app.services.chat_limit_service import MAX_PROMPTS_PER_DAY, ChatLimitService
 from app.services.items_service import ItemsService
+from app.exceptions.app_exceptions import ServiceUnavailableError
 
 ASSISTANT_ROLE = (
     "You are a helpful shopping assistant for an online store. "
@@ -29,12 +30,16 @@ class ChatService:
 
     @staticmethod
     def ask(user_id: int, message: str) -> dict[str, str | int]:
-        ChatLimitService.ensure_can_prompt(user_id)
-        answer: str = openai_client.ask(
-            instructions=ChatService._build_instructions(),
-            user_message=message,
-        )
+        instructions: str = ChatService._build_instructions()
         used: int = ChatLimitService.consume_prompt(user_id)
+        try:
+            answer: str = openai_client.ask(
+                instructions=instructions, user_message=message
+            )
+        except ServiceUnavailableError:
+            ChatLimitService.refund_prompt(user_id)
+            raise
+
         return {
             "answer": answer,
             "prompts_used": used,

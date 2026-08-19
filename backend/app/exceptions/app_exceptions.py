@@ -18,3 +18,6 @@ class ServiceUnavailableError(AppError):
 
 class RateLimitError(AppError):
     pass
+
+class BadRequestError(AppError):
+    pass

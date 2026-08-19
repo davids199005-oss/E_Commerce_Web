@@ -25,18 +25,25 @@ class ChatLimitService:
     def get_used_prompts(user_id: int) -> int:
         return cache_client.get_int(key=ChatLimitService._build_key(user_id))
 
+
     @staticmethod
-    def ensure_can_prompt(user_id: int) -> None:
-        if ChatLimitService.get_used_prompts(user_id) >= MAX_PROMPTS_PER_DAY:
+    def consume_prompt(user_id: int) -> int:
+        used: int = cache_client.increment_with_expiry(
+            key=ChatLimitService._build_key(user_id),
+            amount=1,
+            ttl_seconds=ChatLimitService._seconds_until_midnight(),
+        )
+        if used > MAX_PROMPTS_PER_DAY:
             raise RateLimitError(
                 f"Daily prompt limit reached ({MAX_PROMPTS_PER_DAY} per day). "
                 f"Try again tomorrow."
             )
+        return used
 
     @staticmethod
-    def consume_prompt(user_id: int) -> int:
-        return cache_client.increment_with_expiry(
+    def refund_prompt(user_id: int) -> None:
+        cache_client.increment_with_expiry(
             key=ChatLimitService._build_key(user_id),
-            amount=1,
+            amount=-1,
             ttl_seconds=ChatLimitService._seconds_until_midnight(),
         )
