@@ -20,3 +20,4 @@ def login(credentials: UserLogin) -> dict[str, str]:
     if token is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     return {"token": token}
+
