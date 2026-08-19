@@ -13,11 +13,14 @@ class ConflictError(AppError):
 class ValidationError(AppError):
     pass
 
+
 class ServiceUnavailableError(AppError):
     pass
 
+
 class RateLimitError(AppError):
     pass
+
 
 class BadRequestError(AppError):
     pass

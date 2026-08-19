@@ -2,18 +2,13 @@ from typing import TypeAlias, cast
 
 from app.db.connection import get_connection
 from app.enums.filter_operator import FilterOperator
+from app.enums.operator_sql import OPERATOR_SQL
 from app.models.item_schema import ItemRecord, ItemWrite
 
 QueryParam: TypeAlias = str | float | int
 
 
 class ItemsRepository:
-    OPERATOR_SQL: dict[FilterOperator, str] = {
-        FilterOperator.LT: "<",
-        FilterOperator.GT: ">",
-        FilterOperator.EQ: "=",
-    }
-
     @staticmethod
     def get_all_items() -> list[ItemRecord]:
         with (
@@ -94,11 +89,11 @@ class ItemsRepository:
             params.extend([f"%{name}%" for name in names])
 
         if price_op is not None and price_value is not None:
-            conditions.append(f"price_usd {ItemsRepository.OPERATOR_SQL[price_op]} %s")
+            conditions.append(f"price_usd {OPERATOR_SQL[price_op]} %s")
             params.append(price_value)
 
         if stock_op is not None and stock_value is not None:
-            conditions.append(f"stock_qty {ItemsRepository.OPERATOR_SQL[stock_op]} %s")
+            conditions.append(f"stock_qty {OPERATOR_SQL[stock_op]} %s")
             params.append(stock_value)
 
         query = "SELECT id, name, price_usd, stock_qty FROM items"

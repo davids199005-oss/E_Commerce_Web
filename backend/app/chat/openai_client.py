@@ -1,7 +1,5 @@
-from openai.types.responses.response import Response
-
-
 from openai import OpenAI, OpenAIError
+from openai.types.responses.response import Response
 
 from app.config.config import settings
 from app.exceptions.app_exceptions import ServiceUnavailableError

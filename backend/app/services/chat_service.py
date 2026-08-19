@@ -1,17 +1,10 @@
+from app.chat.assistant_role import ASSISTANT_ROLE
 from app.chat.openai_client import openai_client
+from app.config.config import settings
+from app.exceptions.app_exceptions import ServiceUnavailableError
 from app.models.item_schema import ItemRecord
 from app.services.chat_limit_service import ChatLimitService
 from app.services.items_service import ItemsService
-from app.exceptions.app_exceptions import ServiceUnavailableError
-from app.config.config import settings
-
-ASSISTANT_ROLE = (
-    "You are a helpful shopping assistant for an online store. "
-    "Answer customer questions about the products in the catalog below. "
-    "You may also answer general knowledge questions related to those products. "
-    "Always state clearly when a product is out of stock. "
-    "If asked about a product that is not in the catalog, say the store does not carry it."
-)
 
 
 class ChatService:
