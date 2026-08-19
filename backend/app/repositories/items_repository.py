@@ -7,7 +7,10 @@ from app.enums.operator_sql import OPERATOR_SQL
 from app.models.item_schema import ItemPatch, ItemRecord, ItemWrite
 
 QueryParam: TypeAlias = str | float | int
-_ITEM_PATCH_COLUMNS: frozenset[str] = frozenset({"name", "price_usd", "stock_qty"})
+_ITEM_PATCH_COLUMNS: frozenset[str] = frozenset(
+    {"name", "price_usd", "stock_qty", "image_url"}
+)
+_ITEM_SELECT: str = "SELECT id, name, price_usd, stock_qty, image_url FROM items"
 
 
 class ItemsRepository:
@@ -17,7 +20,7 @@ class ItemsRepository:
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
         ):
-            cursor.execute("SELECT id, name, price_usd, stock_qty FROM items")
+            cursor.execute(_ITEM_SELECT)
             return cast(list[ItemRecord], cursor.fetchall())
 
     @staticmethod
@@ -27,7 +30,7 @@ class ItemsRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                "SELECT id, name, price_usd, stock_qty FROM items WHERE id = %s",
+                f"{_ITEM_SELECT} WHERE id = %s",
                 (item_id,),
             )
             row = cursor.fetchone()
@@ -42,8 +45,11 @@ class ItemsRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                "INSERT INTO items (name, price_usd, stock_qty) VALUES (%s, %s, %s)",
-                (item["name"], item["price_usd"], item["stock_qty"]),
+                """
+                INSERT INTO items (name, price_usd, stock_qty, image_url)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (item["name"], item["price_usd"], item["stock_qty"], item["image_url"]),
             )
             connection.commit()
             inserted_id: int | None = cursor.lastrowid
@@ -61,7 +67,7 @@ class ItemsRepository:
         ]
         if not assignments:
             return 0
-        params: list[str | Decimal | int] = [
+        params: list[str | Decimal | int | None] = [
             item[column] for column in item if column in _ITEM_PATCH_COLUMNS
         ]
         params.append(item_id)
@@ -110,7 +116,7 @@ class ItemsRepository:
             conditions.append(f"stock_qty {OPERATOR_SQL[stock_op]} %s")
             params.append(stock_value)
 
-        query = "SELECT id, name, price_usd, stock_qty FROM items"
+        query = _ITEM_SELECT
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
 

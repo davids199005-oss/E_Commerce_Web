@@ -69,6 +69,31 @@ class OrdersService:
         return order_id
 
     @staticmethod
+    def update_item_quantity(user_id: int, item_id: int, quantity: int) -> None:
+        order_id: int | None = OrdersRepository.get_active_order_id(user_id)
+        if order_id is None:
+            raise NotFoundError("You have no active order")
+
+        quantity_in_order: int = OrdersRepository.get_item_quantity_in_order(
+            order_id, item_id
+        )
+        if quantity_in_order == 0:
+            raise NotFoundError("Item is not in your order")
+
+        item: ItemRecord | None = ItemsRepository.get_item_by_id(item_id)
+        if item is None:
+            raise NotFoundError("Item not found")
+
+        if quantity > item["stock_qty"]:
+            raise ConflictError(
+                f"Not enough stock for item '{item['name']}'. "
+                f"Available: {item['stock_qty']}"
+            )
+
+        OrdersRepository.set_item_quantity(order_id, item_id, quantity)
+        OrdersRepository.recalculate_order_total(order_id)
+
+    @staticmethod
     def remove_item(user_id: int, item_id: int) -> None:
         order_id: int | None = OrdersRepository.get_active_order_id(user_id)
         if order_id is None:

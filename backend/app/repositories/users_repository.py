@@ -67,6 +67,21 @@ class UsersRepository:
             return cast(UserAuthRecord, row)
 
     @staticmethod
+    def get_auth_by_id(user_id: int) -> UserAuthRecord | None:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute(
+                "SELECT id, username, email, password_hash FROM users WHERE id = %s",
+                (user_id,),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return cast(UserAuthRecord, row)
+
+    @staticmethod
     def exists_by_username_or_email(
             username: str, email: str, exclude_user_id: int | None = None
     ) -> bool:
@@ -141,6 +156,19 @@ class UsersRepository:
             cursor.execute(
                 f"UPDATE users SET {', '.join(assignments)} WHERE id = %s",
                 tuple(params),
+            )
+            connection.commit()
+            return cursor.rowcount
+
+    @staticmethod
+    def update_password(user_id: int, password_hash: str) -> int:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute(
+                "UPDATE users SET password_hash = %s WHERE id = %s",
+                (password_hash, user_id),
             )
             connection.commit()
             return cursor.rowcount

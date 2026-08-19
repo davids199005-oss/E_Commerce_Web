@@ -1,7 +1,20 @@
-from app.exceptions.app_exceptions import ConflictError, NotFoundError, ValidationError
-from app.models.user_schema import UserProfileWrite, UserRecord, UserUpdate
-from app.repositories.favorites_repository import FavoritesRepository
+from typing import cast
+
+from app.exceptions.app_exceptions import (
+    BadRequestError,
+    ConflictError,
+    NotFoundError,
+    ValidationError,
+)
+from app.models.user_schema import (
+    PasswordChange,
+    UserAuthRecord,
+    UserProfileWrite,
+    UserRecord,
+    UserUpdate,
+)
 from app.repositories.users_repository import UsersRepository
+from app.utils.password_util import PasswordUtil
 
 
 class UsersService:
@@ -14,7 +27,9 @@ class UsersService:
 
     @staticmethod
     def update_profile(user_id: int, user_data: UserUpdate) -> UserRecord:
-        fields: UserProfileWrite = user_data.model_dump(exclude_unset=True)
+        fields: UserProfileWrite = cast(
+            UserProfileWrite, user_data.model_dump(exclude_unset=True)
+        )
         if not fields:
             raise ValidationError("At least one field is required")
 
@@ -29,12 +44,30 @@ class UsersService:
         ):
             raise ConflictError("Username or email already exists")
 
-        UsersRepository.update_user(user_id, fields)
+        UsersRepository.update_user(user_id, user=fields)
         return UsersService.get_profile(user_id)
 
     @staticmethod
+    def change_password(user_id: int, passwords: PasswordChange) -> None:
+        user: UserAuthRecord | None = UsersRepository.get_auth_by_id(user_id)
+        if user is None:
+            raise NotFoundError("User not found")
+
+        if not PasswordUtil.verify_password(
+            plain_password=passwords.current_password,
+            hashed_password=user["password_hash"],
+        ):
+            raise BadRequestError("Current password is incorrect")
+
+        UsersRepository.update_password(
+            user_id,
+            password_hash=PasswordUtil.hash_password(
+                plain_password=passwords.new_password
+            ),
+        )
+
+    @staticmethod
     def delete_account(user_id: int) -> None:
-        FavoritesRepository.delete_all_for_user(user_id)
         deleted_rows: int = UsersRepository.delete_user(user_id=user_id)
         if deleted_rows == 0:
             raise NotFoundError("User not found")

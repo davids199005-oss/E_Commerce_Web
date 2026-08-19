@@ -107,7 +107,8 @@ class OrdersRepository:
                                items.name,
                                order_items.quantity,
                                order_items.unit_usd AS unit_price,
-                               items.stock_qty
+                               items.stock_qty,
+                               items.image_url
                         FROM order_items
                                  JOIN items ON order_items.item_id = items.id
                         WHERE order_items.order_id = %s
@@ -133,6 +134,24 @@ class OrdersRepository:
                 (order_id, item_id, quantity, unit_price),
             )
             connection.commit()
+
+    @staticmethod
+    def set_item_quantity(order_id: int, item_id: int, quantity: int) -> int:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute(
+                """
+                UPDATE order_items
+                SET quantity = %s
+                WHERE order_id = %s
+                  AND item_id = %s
+                """,
+                (quantity, order_id, item_id),
+            )
+            connection.commit()
+            return cursor.rowcount
 
     @staticmethod
     def remove_item_from_order(order_id: int, item_id: int) -> int:

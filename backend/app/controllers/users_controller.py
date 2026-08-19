@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.middleware.auth_middleware import get_current_user_id
-from app.models.user_schema import UserRecord, UserUpdate
+from app.models.user_schema import PasswordChange, UserRecord, UserUpdate
 from app.services.users_service import UsersService
 
 router: APIRouter = APIRouter(prefix="/users", tags=["Users"])
@@ -20,6 +20,15 @@ def update_profile(
         user_id: int = Depends(dependency=get_current_user_id),
 ) -> UserRecord:
     return UsersService.update_profile(user_id, user_data)
+
+
+@router.patch(path="/me/password")
+def change_password(
+        passwords: PasswordChange,
+        user_id: int = Depends(dependency=get_current_user_id),
+) -> dict[str, str]:
+    UsersService.change_password(user_id, passwords)
+    return {"message": "Password changed successfully"}
 
 
 @router.delete(path="/me")

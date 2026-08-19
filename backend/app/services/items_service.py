@@ -15,6 +15,7 @@ class ItemsService:
             "name": item.name,
             "price_usd": item.price_usd,
             "stock_qty": item.stock_qty,
+            "image_url": item.image_url,
         }
 
     @staticmethod
@@ -25,7 +26,7 @@ class ItemsService:
 
     @staticmethod
     def update_item(item_id: int, item: ItemUpdate) -> None:
-        fields: ItemPatch = item.model_dump(exclude_unset=True)
+        fields: ItemPatch = cast(ItemPatch, item.model_dump(exclude_unset=True))
         if not fields:
             raise ValidationError("At least one field is required")
         if ItemsRepository.get_item_by_id(item_id) is None:

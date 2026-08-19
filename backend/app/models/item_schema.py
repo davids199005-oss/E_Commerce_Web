@@ -8,12 +8,14 @@ class ItemCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     price_usd: Decimal = Field(ge=0)
     stock_qty: int = Field(default=0, ge=0)
+    image_url: str | None = Field(default=None, max_length=500)
 
 
 class ItemUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
     price_usd: Decimal | None = Field(default=None, ge=0)
     stock_qty: int | None = Field(default=None, ge=0)
+    image_url: str | None = Field(default=None, max_length=500)
 
 
 class ItemRecord(TypedDict):
@@ -21,15 +23,18 @@ class ItemRecord(TypedDict):
     name: str
     price_usd: Decimal
     stock_qty: int
+    image_url: str | None
 
 
 class ItemWrite(TypedDict):
     name: str
     price_usd: Decimal
     stock_qty: int
+    image_url: str | None
 
 
 class ItemPatch(TypedDict, total=False):
     name: str
     price_usd: Decimal
     stock_qty: int
+    image_url: str | None

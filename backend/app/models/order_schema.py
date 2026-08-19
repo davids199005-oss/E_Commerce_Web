@@ -10,6 +10,10 @@ class OrderItemRequest(BaseModel):
     quantity: int = Field(default=1, gt=0)
 
 
+class OrderItemQuantityUpdate(BaseModel):
+    quantity: int = Field(gt=0)
+
+
 class OrderRecord(TypedDict):
     id: int
     status: str
@@ -30,6 +34,7 @@ class OrderItemRecord(TypedDict):
     quantity: int
     unit_price: Decimal
     stock_qty: int
+    image_url: str | None
 
 
 class OrderDetailRecord(OrderByIdRecord):

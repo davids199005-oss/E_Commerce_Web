@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends, status
 
 from app.middleware.auth_middleware import get_current_user_id
-from app.models.order_schema import OrderDetailRecord, OrderItemRequest, OrderRecord
+from app.models.order_schema import (
+    OrderDetailRecord,
+    OrderItemQuantityUpdate,
+    OrderItemRequest,
+    OrderRecord,
+)
 from app.services.orders_service import OrdersService
 
 router: APIRouter = APIRouter(prefix="/orders", tags=["Orders"])
@@ -21,6 +26,16 @@ def add_item(
 ) -> dict[str, str | int]:
     order_id: int = OrdersService.add_item(user_id, request.item_id, request.quantity)
     return {"message": "Item added to order", "order_id": order_id}
+
+
+@router.patch(path="/items/{item_id}")
+def update_item_quantity(
+        item_id: int,
+        request: OrderItemQuantityUpdate,
+        user_id: int = Depends(dependency=get_current_user_id),
+) -> dict[str, str]:
+    OrdersService.update_item_quantity(user_id, item_id, request.quantity)
+    return {"message": "Item quantity updated"}
 
 
 @router.delete(path="/items/{item_id}")

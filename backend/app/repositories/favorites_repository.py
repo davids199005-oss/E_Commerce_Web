@@ -13,7 +13,11 @@ class FavoritesRepository:
         ):
             cursor.execute(
                         """
-                        SELECT items.id, items.name, items.price_usd, items.stock_qty
+                        SELECT items.id,
+                               items.name,
+                               items.price_usd,
+                               items.stock_qty,
+                               items.image_url
                         FROM favorites
                                  JOIN items ON favorites.item_id = items.id
                         WHERE favorites.user_id = %s
