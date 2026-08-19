@@ -1,9 +1,10 @@
 from types import TracebackType
+
+from mysql.connector import pooling
 from mysql.connector.pooling import MySQLConnectionPool
 
-
 from app.config.config import settings
-from mysql.connector import pooling
+
 
 class ConnectionPool:
     def __init__(self) -> None:
@@ -23,12 +24,20 @@ class ConnectionPool:
 
 connection_pool: ConnectionPool = ConnectionPool()
 
+
 class DatabaseConnection:
     def __enter__(self) -> pooling.PooledMySQLConnection:
-        self.connection: pooling.PooledMySQLConnection = connection_pool.get_connection()
+        self.connection: pooling.PooledMySQLConnection = (
+            connection_pool.get_connection()
+        )
         return self.connection
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         if exc_type is not None:
             self.connection.rollback()
         self.connection.close()

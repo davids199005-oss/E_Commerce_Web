@@ -1,10 +1,10 @@
-from pandas.core.frame import DataFrame
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol, cast
 
 import joblib  # pyright: ignore[reportMissingTypeStubs]
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 from app.config.config import PROJECT_ROOT
 from app.exceptions.app_exceptions import NotFoundError, ServiceUnavailableError
@@ -62,7 +62,9 @@ class ChurnService:
             raise NotFoundError("User not found")
 
         features: dict[str, float] = cls._build_features(raw)
-        frame: DataFrame = pd.DataFrame([features], columns=cls._model["feature_columns"])
+        frame: DataFrame = pd.DataFrame(
+            [features], columns=cls._model["feature_columns"]
+        )
         probability: float = float(cls._model["pipeline"].predict_proba(x=frame)[0][1])
 
         return {

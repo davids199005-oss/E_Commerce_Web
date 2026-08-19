@@ -1,7 +1,8 @@
-from enum import Enum
+from enum import StrEnum
+
 
 # Filter Operator
-class FilterOperator(str, Enum):
+class FilterOperator(StrEnum):
     EQ = "eq"
     GT = "gt"
     LT = "lt"

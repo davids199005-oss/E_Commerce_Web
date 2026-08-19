@@ -1,18 +1,19 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
 from app.cache.redis_client import cache_client
-from app.exceptions.app_exceptions import RateLimitError
 from app.config.config import settings
+from app.exceptions.app_exceptions import RateLimitError
 
 
 class ChatLimitService:
     @staticmethod
     def _build_key(user_id: int) -> str:
-        today: str = datetime.now(tz=timezone.utc).strftime(format="%Y-%m-%d")
+        today: str = datetime.now(tz=UTC).strftime(format="%Y-%m-%d")
         return f"{settings.CHAT_PROMPTS_KEY_PREFIX}:{user_id}:{today}"
 
     @staticmethod
     def _seconds_until_midnight() -> int:
-        now: datetime = datetime.now(tz=timezone.utc)
+        now: datetime = datetime.now(tz=UTC)
         next_midnight: datetime = (now + timedelta(days=1)).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
@@ -21,7 +22,6 @@ class ChatLimitService:
     @staticmethod
     def get_used_prompts(user_id: int) -> int:
         return cache_client.get_int(key=ChatLimitService._build_key(user_id))
-
 
     @staticmethod
     def consume_prompt(user_id: int) -> int:

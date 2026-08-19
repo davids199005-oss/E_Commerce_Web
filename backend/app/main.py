@@ -15,15 +15,15 @@ from app.controllers import (
 )
 from app.exceptions.app_exceptions import AppError
 from app.middleware.exception_handler import app_error_handler
-from app.services.churn_service import ChurnService
 from app.middleware.rate_limit_middleware import RateLimitMiddleware
-
+from app.services.churn_service import ChurnService
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     ChurnService.load_model()
     yield
+
 
 app: FastAPI = FastAPI(title="Ecommerce Shop API", lifespan=lifespan)
 
@@ -51,6 +51,7 @@ app.include_router(orders_controller.router)
 app.include_router(chat_controller.router)
 app.include_router(analytics_controller.router)
 app.include_router(users_controller.router)
+
 
 # Health check
 @app.get(path="/")

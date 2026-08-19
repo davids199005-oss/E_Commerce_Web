@@ -29,7 +29,7 @@ class UsersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         INSERT INTO users
                         (first_name, last_name, email, phone, country, city, username, password_hash)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -83,7 +83,7 @@ class UsersRepository:
 
     @staticmethod
     def exists_by_username_or_email(
-            username: str, email: str, exclude_user_id: int | None = None
+        username: str, email: str, exclude_user_id: int | None = None
     ) -> bool:
         query: str = "SELECT id FROM users WHERE (username = %s OR email = %s)"
         params: tuple[str, str] | tuple[str, str, int] = (username, email)
@@ -105,7 +105,7 @@ class UsersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         SELECT id,
                                username,
                                email,

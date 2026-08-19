@@ -4,7 +4,13 @@ from app.cache.redis_client import cache_client
 from app.config.config import settings
 from app.enums.filter_operator import FilterOperator
 from app.exceptions.app_exceptions import NotFoundError, ValidationError
-from app.models.item_schema import ItemCreate, ItemPatch, ItemRecord, ItemUpdate, ItemWrite
+from app.models.item_schema import (
+    ItemCreate,
+    ItemPatch,
+    ItemRecord,
+    ItemUpdate,
+    ItemWrite,
+)
 from app.repositories.items_repository import ItemsRepository
 
 
@@ -50,8 +56,8 @@ class ItemsService:
 
     @staticmethod
     def get_all_items() -> list[ItemRecord]:
-        cache_items: list[dict[str, Any]] | dict[str, Any] | None = cache_client.get_json(
-            key=settings.ITEMS_CACHE_KEY
+        cache_items: list[dict[str, Any]] | dict[str, Any] | None = (
+            cache_client.get_json(key=settings.ITEMS_CACHE_KEY)
         )
         if isinstance(cache_items, list):
             return cast(list[ItemRecord], cache_items)
@@ -69,11 +75,11 @@ class ItemsService:
 
     @staticmethod
     def search_items(
-            names: list[str] | None = None,
-            price_op: FilterOperator | None = None,
-            price_value: float | None = None,
-            stock_op: FilterOperator | None = None,
-            stock_value: int | None = None,
+        names: list[str] | None = None,
+        price_op: FilterOperator | None = None,
+        price_value: float | None = None,
+        stock_op: FilterOperator | None = None,
+        stock_value: int | None = None,
     ) -> list[ItemRecord]:
         if price_op is not None and price_value is None:
             raise ValidationError("price_value is required when price_op is provided")

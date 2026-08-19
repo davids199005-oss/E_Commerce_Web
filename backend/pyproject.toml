@@ -1,0 +1,19 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+src = ["."]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = [
+    "B008", # FastAPI Depends/Query defaults
+    "E501", # formatter owns wrapping; leftover hits are SQL strings
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true

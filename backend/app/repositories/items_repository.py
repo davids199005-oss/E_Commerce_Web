@@ -1,12 +1,12 @@
 from decimal import Decimal
-from typing import TypeAlias, cast
+from typing import cast
 
 from app.db.connection import get_connection
 from app.enums.filter_operator import FilterOperator
 from app.enums.operator_sql import OPERATOR_SQL
 from app.models.item_schema import ItemPatch, ItemRecord, ItemWrite
 
-QueryParam: TypeAlias = str | float | int
+type QueryParam = str | float | int
 _ITEM_PATCH_COLUMNS: frozenset[str] = frozenset(
     {"name", "price_usd", "stock_qty", "image_url"}
 )
@@ -94,11 +94,11 @@ class ItemsRepository:
 
     @staticmethod
     def search_items(
-            names: list[str] | None = None,
-            price_op: FilterOperator | None = None,
-            price_value: float | None = None,
-            stock_op: FilterOperator | None = None,
-            stock_value: int | None = None,
+        names: list[str] | None = None,
+        price_op: FilterOperator | None = None,
+        price_value: float | None = None,
+        stock_op: FilterOperator | None = None,
+        stock_value: int | None = None,
     ) -> list[ItemRecord]:
         conditions: list[str] = []
         params: list[QueryParam] = []

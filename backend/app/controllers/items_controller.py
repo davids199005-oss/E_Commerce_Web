@@ -10,11 +10,11 @@ router: APIRouter = APIRouter(prefix="/items", tags=["Items"])
 
 @router.get(path="")
 def get_items(
-        names: list[str] | None = Query(default=None),
-        price_op: FilterOperator | None = Query(default=None),
-        price_value: float | None = Query(default=None),
-        stock_op: FilterOperator | None = Query(default=None),
-        stock_value: int | None = Query(default=None),
+    names: list[str] | None = Query(default=None),
+    price_op: FilterOperator | None = Query(default=None),
+    price_value: float | None = Query(default=None),
+    stock_op: FilterOperator | None = Query(default=None),
+    stock_value: int | None = Query(default=None),
 ) -> dict[str, list[ItemRecord] | str]:
     has_filters: bool = any(
         value is not None

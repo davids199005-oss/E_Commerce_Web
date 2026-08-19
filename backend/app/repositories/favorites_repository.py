@@ -12,7 +12,7 @@ class FavoritesRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         SELECT items.id,
                                items.name,
                                items.price_usd,

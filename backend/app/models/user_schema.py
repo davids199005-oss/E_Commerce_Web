@@ -3,6 +3,7 @@ from typing import TypedDict
 
 from pydantic import BaseModel, EmailStr, Field
 
+
 # Pydantic model for user creation
 class UserCreate(BaseModel):
     first_name: str = Field(min_length=1, max_length=100)

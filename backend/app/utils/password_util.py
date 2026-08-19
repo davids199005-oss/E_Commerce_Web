@@ -13,4 +13,6 @@ class PasswordUtil:
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         password_bytes: bytes = plain_password.encode(encoding="utf-8")
         hashed_password_bytes: bytes = hashed_password.encode(encoding="utf-8")
-        return bcrypt.checkpw(password=password_bytes, hashed_password=hashed_password_bytes)
+        return bcrypt.checkpw(
+            password=password_bytes, hashed_password=hashed_password_bytes
+        )

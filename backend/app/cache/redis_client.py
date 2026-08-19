@@ -1,5 +1,5 @@
-from decimal import Decimal
 import json
+from decimal import Decimal
 from typing import Any, Protocol, cast
 
 import redis
@@ -32,8 +32,12 @@ class CacheClient:
             return None
         return json.loads(s=cached_value)
 
-    def set_json(self, key: str, value: list[Any] | dict[str, Any], ttl_seconds: int) -> None:
-        self.client.set(name=key, value=json.dumps(obj=value, default=_json_default), ex=ttl_seconds)
+    def set_json(
+        self, key: str, value: list[Any] | dict[str, Any], ttl_seconds: int
+    ) -> None:
+        self.client.set(
+            name=key, value=json.dumps(obj=value, default=_json_default), ex=ttl_seconds
+        )
 
     def delete(self, key: str) -> None:
         self.client.delete(key)

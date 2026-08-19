@@ -9,23 +9,23 @@ router: APIRouter = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get(path="/me")
 def get_profile(
-        user_id: int = Depends(dependency=get_current_user_id),
+    user_id: int = Depends(dependency=get_current_user_id),
 ) -> UserRecord:
     return UsersService.get_profile(user_id)
 
 
 @router.patch(path="/me")
 def update_profile(
-        user_data: UserUpdate,
-        user_id: int = Depends(dependency=get_current_user_id),
+    user_data: UserUpdate,
+    user_id: int = Depends(dependency=get_current_user_id),
 ) -> UserRecord:
     return UsersService.update_profile(user_id, user_data)
 
 
 @router.patch(path="/me/password")
 def change_password(
-        passwords: PasswordChange,
-        user_id: int = Depends(dependency=get_current_user_id),
+    passwords: PasswordChange,
+    user_id: int = Depends(dependency=get_current_user_id),
 ) -> dict[str, str]:
     UsersService.change_password(user_id, passwords)
     return {"message": "Password changed successfully"}
@@ -33,7 +33,7 @@ def change_password(
 
 @router.delete(path="/me")
 def delete_account(
-        user_id: int = Depends(dependency=get_current_user_id),
+    user_id: int = Depends(dependency=get_current_user_id),
 ) -> dict[str, str]:
     UsersService.delete_account(user_id)
     return {"message": "Account deleted successfully"}

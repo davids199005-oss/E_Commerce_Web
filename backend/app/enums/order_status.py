@@ -1,6 +1,7 @@
-from enum import Enum
+from enum import StrEnum
+
 
 # Order Status
-class OrderStatus(str, Enum):
+class OrderStatus(StrEnum):
     TEMP = "TEMP"
     CLOSED = "CLOSED"

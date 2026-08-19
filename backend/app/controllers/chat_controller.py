@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Depends
 
+from app.config.config import settings
 from app.middleware.auth_middleware import get_current_user_id
 from app.models.chat_schema import ChatRequest
 from app.services.chat_limit_service import ChatLimitService
 from app.services.chat_service import ChatService
-from app.config.config import settings
 
 router: APIRouter = APIRouter(prefix="/chat", tags=["Chat"])
 
 
 @router.post(path="/message")
 def send_message(
-        request: ChatRequest, user_id: int = Depends(dependency=get_current_user_id)
+    request: ChatRequest, user_id: int = Depends(dependency=get_current_user_id)
 ) -> dict[str, str | int]:
     return ChatService.ask(user_id, request.message)
 

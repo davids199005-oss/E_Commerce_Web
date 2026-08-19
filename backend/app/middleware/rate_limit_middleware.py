@@ -2,9 +2,9 @@ from collections.abc import Awaitable, Callable
 
 from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import Address
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.concurrency import run_in_threadpool
 
 from app.cache.redis_client import cache_client
 from app.config.config import settings
@@ -19,7 +19,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     def _resolve_identity(request: Request) -> str:
         header: str | None = request.headers.get("Authorization")
         if header is not None and header.startswith("Bearer "):
-            user_id: int | None = JwtUtil.decode_token(token=header.removeprefix("Bearer "))
+            user_id: int | None = JwtUtil.decode_token(
+                token=header.removeprefix("Bearer ")
+            )
             if user_id is not None:
                 return f"user:{user_id}"
 

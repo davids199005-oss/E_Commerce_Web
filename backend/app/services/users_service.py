@@ -34,7 +34,9 @@ class UsersService:
 
         username: str = fields.get("username", current["username"])
         email: str = fields.get("email", current["email"])
-        if ("username" in fields or "email" in fields) and UsersRepository.exists_by_username_or_email(
+        if (
+            "username" in fields or "email" in fields
+        ) and UsersRepository.exists_by_username_or_email(
             username, email, exclude_user_id=user_id
         ):
             raise ConflictError("Username or email already exists")
@@ -55,7 +57,9 @@ class UsersService:
             raise ValidationError("Current password is incorrect")
 
         if passwords.new_password == passwords.current_password:
-            raise ValidationError("New password must be different from the current password")
+            raise ValidationError(
+                "New password must be different from the current password"
+            )
 
         UsersRepository.update_password(
             user_id,

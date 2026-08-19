@@ -28,7 +28,7 @@ class OrdersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         INSERT INTO orders
                             (user_id, shipping_country, shipping_city, total_price_usd, status)
                         VALUES (%s, %s, %s, 0, %s)
@@ -53,7 +53,7 @@ class OrdersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         SELECT id,
                                user_id,
                                status,
@@ -79,7 +79,7 @@ class OrdersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         SELECT id,
                                status,
                                shipping_country,
@@ -102,7 +102,7 @@ class OrdersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         SELECT items.id AS item_id,
                                items.name,
                                order_items.quantity,
@@ -119,14 +119,14 @@ class OrdersRepository:
 
     @staticmethod
     def add_item_to_order(
-            order_id: int, item_id: int, quantity: int, unit_price: Decimal
+        order_id: int, item_id: int, quantity: int, unit_price: Decimal
     ) -> None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         INSERT INTO order_items (order_id, item_id, quantity, unit_usd)
                             VALUES (%s, %s, %s, %s) AS new
                         ON DUPLICATE KEY UPDATE quantity = order_items.quantity + new.quantity
@@ -196,7 +196,7 @@ class OrdersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         UPDATE orders
                         SET total_price_usd = (SELECT COALESCE(SUM(quantity * unit_usd), 0)
                                                FROM order_items
@@ -214,7 +214,7 @@ class OrdersRepository:
             connection.cursor(dictionary=True) as cursor,
         ):
             cursor.execute(
-                        """
+                """
                         SELECT order_items.item_id, order_items.quantity, items.name
                         FROM order_items
                                  JOIN items ON order_items.item_id = items.id
@@ -230,7 +230,7 @@ class OrdersRepository:
 
             for order_item in order_items:
                 cursor.execute(
-                            """
+                    """
                             UPDATE items
                             SET stock_qty = stock_qty - %s
                             WHERE id = %s
