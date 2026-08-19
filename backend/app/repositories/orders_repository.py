@@ -136,7 +136,7 @@ class OrdersRepository:
             connection.commit()
 
     @staticmethod
-    def set_item_quantity(order_id: int, item_id: int, quantity: int) -> int:
+    def set_item_quantity(order_id: int, item_id: int, quantity: int) -> None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,
@@ -151,7 +151,6 @@ class OrdersRepository:
                 (quantity, order_id, item_id),
             )
             connection.commit()
-            return cursor.rowcount
 
     @staticmethod
     def remove_item_from_order(order_id: int, item_id: int) -> int:
