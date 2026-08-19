@@ -1,17 +1,14 @@
 from datetime import datetime, timedelta, timezone
-
 from app.cache.redis_client import cache_client
 from app.exceptions.app_exceptions import RateLimitError
-
-MAX_PROMPTS_PER_DAY = 5
-CHAT_PROMPTS_KEY_PREFIX = "chat:prompts"
+from app.config.config import settings
 
 
 class ChatLimitService:
     @staticmethod
     def _build_key(user_id: int) -> str:
         today: str = datetime.now(tz=timezone.utc).strftime(format="%Y-%m-%d")
-        return f"{CHAT_PROMPTS_KEY_PREFIX}:{user_id}:{today}"
+        return f"{settings.CHAT_PROMPTS_KEY_PREFIX}:{user_id}:{today}"
 
     @staticmethod
     def _seconds_until_midnight() -> int:
@@ -33,9 +30,9 @@ class ChatLimitService:
             amount=1,
             ttl_seconds=ChatLimitService._seconds_until_midnight(),
         )
-        if used > MAX_PROMPTS_PER_DAY:
+        if used > settings.MAX_PROMPTS_PER_DAY:
             raise RateLimitError(
-                f"Daily prompt limit reached ({MAX_PROMPTS_PER_DAY} per day). "
+                f"Daily prompt limit reached ({settings.MAX_PROMPTS_PER_DAY} per day). "
                 f"Try again tomorrow."
             )
         return used

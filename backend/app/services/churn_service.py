@@ -1,3 +1,4 @@
+from pandas.core.frame import DataFrame
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol, cast
@@ -10,7 +11,7 @@ from app.exceptions.app_exceptions import NotFoundError, ServiceUnavailableError
 from app.models.churn_schema import ChurnFeaturesRaw, ChurnModel, ChurnPrediction
 from app.repositories.analytics_repository import AnalyticsRepository
 
-MODEL_PATH = PROJECT_ROOT / "ml" / "model" / "churn_model.joblib"
+MODEL_PATH: Path = PROJECT_ROOT / "ml" / "model" / "churn_model.joblib"
 
 
 class _Joblib(Protocol):
@@ -35,7 +36,7 @@ class ChurnService:
 
         avg_order_value: float = total_spent / orders_count if orders_count > 0 else 0.0
 
-        last_order_at = raw["last_order_at"]
+        last_order_at: datetime | None = raw["last_order_at"]
         if last_order_at is None:
             days_since_last_order: float = account_age_days
         else:
@@ -61,12 +62,12 @@ class ChurnService:
             raise NotFoundError("User not found")
 
         features: dict[str, float] = cls._build_features(raw)
-        frame = pd.DataFrame([features], columns=cls._model["feature_columns"])
-        probability: float = float(cls._model["pipeline"].predict_proba(frame)[0][1])
+        frame: DataFrame = pd.DataFrame([features], columns=cls._model["feature_columns"])
+        probability: float = float(cls._model["pipeline"].predict_proba(x=frame)[0][1])
 
         return {
             "user_id": user_id,
-            "churn_probability": round(probability, 4),
+            "churn_probability": round(number=probability, ndigits=4),
             "will_churn": probability >= 0.5,
             "features": features,
         }

@@ -15,7 +15,7 @@ from app.controllers import (
 from app.services.churn_service import ChurnService
 from app.exceptions.app_exceptions import AppError
 from app.middleware.exception_handler import app_error_handler
-
+from app.middleware.rate_limit_middleware import RateLimitMiddleware
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     ChurnService.load_model()
@@ -23,6 +23,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app: FastAPI = FastAPI(title="Ecommerce Shop API", lifespan=lifespan)
 
+# Rate Limit Middleware
+app.add_middleware(middleware_class=RateLimitMiddleware)
+
+# CORS Middleware
 app.add_middleware(
     middleware_class=CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -31,7 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Exception handlers
+# Exception Handler Middleware
 app.add_exception_handler(exc_class_or_status_code=AppError, handler=app_error_handler)
 
 

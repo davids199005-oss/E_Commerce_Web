@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends
 
 from app.middleware.auth_middleware import get_current_user_id
 from app.models.chat_schema import ChatRequest
-from app.services.chat_limit_service import MAX_PROMPTS_PER_DAY, ChatLimitService
+from app.services.chat_limit_service import ChatLimitService
 from app.services.chat_service import ChatService
+from app.config.config import settings
 
 router: APIRouter = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -19,6 +20,6 @@ def send_message(
 def get_usage(user_id: int = Depends(dependency=get_current_user_id)) -> dict[str, int]:
     used: int = ChatLimitService.get_used_prompts(user_id)
     return {
-        "prompts_used": min(used, MAX_PROMPTS_PER_DAY),
-        "prompts_remaining": max(MAX_PROMPTS_PER_DAY - used, 0),
+        "prompts_used": min(used, settings.MAX_PROMPTS_PER_DAY),
+        "prompts_remaining": max(settings.MAX_PROMPTS_PER_DAY - used, 0),
     }

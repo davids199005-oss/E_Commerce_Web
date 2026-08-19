@@ -1,8 +1,9 @@
 from app.chat.openai_client import openai_client
 from app.models.item_schema import ItemRecord
-from app.services.chat_limit_service import MAX_PROMPTS_PER_DAY, ChatLimitService
+from app.services.chat_limit_service import ChatLimitService
 from app.services.items_service import ItemsService
 from app.exceptions.app_exceptions import ServiceUnavailableError
+from app.config.config import settings
 
 ASSISTANT_ROLE = (
     "You are a helpful shopping assistant for an online store. "
@@ -43,5 +44,5 @@ class ChatService:
         return {
             "answer": answer,
             "prompts_used": used,
-            "prompts_remaining": MAX_PROMPTS_PER_DAY - used,
+            "prompts_remaining": settings.MAX_PROMPTS_PER_DAY - used,
         }
