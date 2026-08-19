@@ -16,7 +16,7 @@ from app.controllers import (
 from app.exceptions.app_exceptions import AppError
 from app.middleware.exception_handler import app_error_handler
 from app.services.churn_service import ChurnService
-from backend.app.middleware.rate_limit_middleware import RateLimitMiddleware
+from app.middleware.rate_limit_middleware import RateLimitMiddleware
 
 
 
