@@ -1,25 +1,24 @@
-from starlette.datastructures import Address
-
-
 from collections.abc import Awaitable, Callable
 
 from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
+from starlette.datastructures import Address
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.cache.redis_client import cache_client
 from app.config.config import settings
 from app.utils.jwt_util import JwtUtil
 
-EXCLUDED_PATHS: frozenset[str] = frozenset[str]({"/", "/docs", "/redoc", "/openapi.json"})
+EXCLUDED_PATHS = frozenset[str]({"/", "/docs", "/redoc", "/openapi.json"})
 RATE_LIMIT_KEY_PREFIX: str = "rate:limit"
+
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     @staticmethod
     def _resolve_identity(request: Request) -> str:
         header: str | None = request.headers.get("Authorization")
         if header is not None and header.startswith("Bearer "):
-            user_id: int | None = JwtUtil.decode_token(token=header.removeprefix("Bearer "))
+            user_id: int | None = JwtUtil.decode_token(header.removeprefix("Bearer "))
             if user_id is not None:
                 return f"user:{user_id}"
 

@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.controllers import (
     analytics_controller,
     auth_controller,
@@ -12,10 +13,13 @@ from app.controllers import (
     orders_controller,
     users_controller,
 )
-from app.services.churn_service import ChurnService
 from app.exceptions.app_exceptions import AppError
 from app.middleware.exception_handler import app_error_handler
-from app.middleware.rate_limit_middleware import RateLimitMiddleware
+from app.services.churn_service import ChurnService
+from backend.app.middleware.rate_limit_middleware import RateLimitMiddleware
+
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     ChurnService.load_model()
