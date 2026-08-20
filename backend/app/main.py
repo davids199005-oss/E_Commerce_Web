@@ -1,8 +1,10 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.controllers import (
     analytics_controller,
@@ -17,11 +19,15 @@ from app.exceptions.app_exceptions import AppError
 from app.middleware.exception_handler import app_error_handler
 from app.middleware.rate_limit_middleware import RateLimitMiddleware
 from app.services.churn_service import ChurnService
+from app.services.items_service import ItemsService
+
+PICS_DIRECTORY: Path = Path(__file__).resolve().parent / "db" / "pics"
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     ChurnService.load_model()
+    ItemsService.ensure_catalog_seeded()
     yield
 
 
@@ -57,3 +63,10 @@ app.include_router(users_controller.router)
 @app.get(path="/")
 def health_check() -> dict[str, str]:
     return {"status": "Healthy"}
+
+
+app.mount(
+    path="/pics",
+    app=StaticFiles(directory=PICS_DIRECTORY),
+    name="pics",
+)

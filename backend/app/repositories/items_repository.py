@@ -126,3 +126,43 @@ class ItemsRepository:
         ):
             cursor.execute(query, tuple(params))
             return cast(list[ItemRecord], cursor.fetchall())
+
+    @staticmethod
+    def count_items() -> int:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute("SELECT COUNT(*) AS item_count FROM items")
+            row = cursor.fetchone()
+            if row is None:
+                return 0
+            return int(row["item_count"])
+
+    @staticmethod
+    def execute_script(sql: str) -> None:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute(sql)
+            connection.commit()
+
+    @staticmethod
+    def backfill_image_urls(image_urls: dict[str, str]) -> None:
+        if not image_urls:
+            return
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.executemany(
+                """
+                UPDATE items
+                SET image_url = %s
+                WHERE name = %s
+                  AND (image_url IS NULL OR image_url NOT LIKE '/pics/%%')
+                """,
+                [(url, name) for name, url in image_urls.items()],
+            )
+            connection.commit()

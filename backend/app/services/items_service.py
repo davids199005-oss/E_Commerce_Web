@@ -2,6 +2,7 @@ from typing import Any, cast
 
 from app.cache.redis_client import cache_client
 from app.config.config import settings
+from app.db.catalog_seed import image_urls_by_name, load_seed_sql
 from app.enums.filter_operator import FilterOperator
 from app.exceptions.app_exceptions import NotFoundError, ValidationError
 from app.models.item_schema import (
@@ -23,6 +24,14 @@ class ItemsService:
             "stock_qty": item.stock_qty,
             "image_url": item.image_url,
         }
+
+    @staticmethod
+    def ensure_catalog_seeded() -> None:
+        sql: str = load_seed_sql()
+        if ItemsRepository.count_items() == 0:
+            ItemsRepository.execute_script(sql)
+        ItemsRepository.backfill_image_urls(image_urls_by_name(sql))
+        ItemsService.delete_all_items_cache()
 
     @staticmethod
     def add_item(item: ItemCreate) -> int:

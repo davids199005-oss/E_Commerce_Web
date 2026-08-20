@@ -11,6 +11,7 @@ from app.config.config import settings
 from app.utils.jwt_util import JwtUtil
 
 EXCLUDED_PATHS = frozenset[str]({"/", "/docs", "/redoc", "/openapi.json"})
+EXCLUDED_PREFIXES: tuple[str, ...] = ("/pics/",)
 RATE_LIMIT_KEY_PREFIX: str = "rate:limit"
 
 
@@ -33,7 +34,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         request: Request,
         call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
-        if request.url.path in EXCLUDED_PATHS:
+        if request.url.path in EXCLUDED_PATHS or request.url.path.startswith(
+            EXCLUDED_PREFIXES
+        ):
             return await call_next(request)
 
         key: str = f"{RATE_LIMIT_KEY_PREFIX}:{self._resolve_identity(request)}"
