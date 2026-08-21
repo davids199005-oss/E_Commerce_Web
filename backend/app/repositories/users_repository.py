@@ -3,6 +3,7 @@ from typing import cast
 from app.db.connection import get_connection
 from app.models.user_schema import (
     UserAuthRecord,
+    UserListItem,
     UserProfileWrite,
     UserRecord,
     UserWrite,
@@ -114,7 +115,8 @@ class UsersRepository:
                                phone,
                                country,
                                city,
-                               created_at
+                               created_at,
+                               is_admin
                         FROM users
                         WHERE id = %s
                         """,
@@ -123,7 +125,20 @@ class UsersRepository:
             row = cursor.fetchone()
             if row is None:
                 return None
+            row["is_admin"] = bool(row["is_admin"])
             return cast(UserRecord, row)
+
+    @staticmethod
+    def list_users() -> list[UserListItem]:
+        with (
+            get_connection() as connection,
+            connection.cursor(dictionary=True) as cursor,
+        ):
+            cursor.execute(
+                "SELECT id, username, email FROM users ORDER BY id ASC"
+            )
+            rows = cursor.fetchall()
+            return [cast(UserListItem, row) for row in rows]
 
     @staticmethod
     def is_admin(user_id: int) -> bool:

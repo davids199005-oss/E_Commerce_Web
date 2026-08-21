@@ -60,6 +60,13 @@ class UserRecord(TypedDict):
     country: str
     city: str
     created_at: datetime
+    is_admin: bool
+
+
+class UserListItem(TypedDict):
+    id: int
+    username: str
+    email: str
 
 
 class UserAuthRecord(TypedDict):

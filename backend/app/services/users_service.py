@@ -4,6 +4,7 @@ from app.exceptions.app_exceptions import ConflictError, NotFoundError, Validati
 from app.models.user_schema import (
     PasswordChange,
     UserAuthRecord,
+    UserListItem,
     UserProfileWrite,
     UserRecord,
     UserUpdate,
@@ -13,6 +14,10 @@ from app.utils.password_util import PasswordUtil
 
 
 class UsersService:
+    @staticmethod
+    def list_users() -> list[UserListItem]:
+        return UsersRepository.list_users()
+
     @staticmethod
     def get_profile(user_id: int) -> UserRecord:
         user: UserRecord | None = UsersRepository.get_by_id(user_id)

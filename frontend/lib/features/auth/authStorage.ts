@@ -1,14 +1,16 @@
-const TOKEN_STORAGE_KEY = "ecommerce_token";
+import { config } from "@/lib/config/config";
 
 export const authStorage = {
   read(): string | null {
-    if (typeof window === "undefined") return null;
-    return window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    if (typeof window === "undefined") {
+      return null;
+    }
+    return window.localStorage.getItem(config.tokenStorageKey);
   },
   write(token: string): void {
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    window.localStorage.setItem(config.tokenStorageKey, token);
   },
   clear(): void {
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+    window.localStorage.removeItem(config.tokenStorageKey);
   },
 };

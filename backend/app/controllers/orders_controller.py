@@ -48,6 +48,13 @@ def remove_item(
     return {"message": "Item removed from order"}
 
 
+@router.get(path="/active")
+def get_active_order(
+    user_id: int = Depends(dependency=get_current_user_id),
+) -> OrderDetailRecord:
+    return OrdersService.get_active_order(user_id)
+
+
 @router.delete(path="/active")
 def delete_active_order(
     user_id: int = Depends(dependency=get_current_user_id),

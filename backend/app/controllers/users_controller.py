@@ -1,10 +1,22 @@
 from fastapi import APIRouter, Depends
 
-from app.middleware.auth_middleware import get_current_user_id
-from app.models.user_schema import PasswordChange, UserRecord, UserUpdate
+from app.middleware.auth_middleware import get_current_user_id, require_admin
+from app.models.user_schema import (
+    PasswordChange,
+    UserListItem,
+    UserRecord,
+    UserUpdate,
+)
 from app.services.users_service import UsersService
 
 router: APIRouter = APIRouter(prefix="/users", tags=["Users"])
+
+
+@router.get(path="")
+def list_users(
+    _admin_id: int = Depends(dependency=require_admin),
+) -> dict[str, list[UserListItem]]:
+    return {"users": UsersService.list_users()}
 
 
 @router.get(path="/me")

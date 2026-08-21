@@ -14,6 +14,13 @@ class OrdersService:
         return OrdersRepository.get_orders_by_user(user_id)
 
     @staticmethod
+    def get_active_order(user_id: int) -> OrderDetailRecord:
+        order_id: int | None = OrdersRepository.get_active_order_id(user_id)
+        if order_id is None:
+            raise NotFoundError("You have no active order")
+        return OrdersService.get_order_details(user_id, order_id)
+
+    @staticmethod
     def get_order_details(user_id: int, order_id: int) -> OrderDetailRecord:
         order: OrderByIdRecord | None = OrdersRepository.get_order_by_id(order_id)
         if order is None or order["user_id"] != user_id:
