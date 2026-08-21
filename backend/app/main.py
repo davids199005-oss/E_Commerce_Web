@@ -1,11 +1,11 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.config.config import settings
 from app.controllers import (
     analytics_controller,
     auth_controller,
@@ -21,9 +21,8 @@ from app.middleware.rate_limit_middleware import RateLimitMiddleware
 from app.services.churn_service import ChurnService
 from app.services.items_service import ItemsService
 
-PICS_DIRECTORY: Path = Path(__file__).resolve().parent / "db" / "pics"
 
-
+# Lifespan (Load the model and ensure the catalog is seeded)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     ChurnService.load_model()
@@ -33,10 +32,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app: FastAPI = FastAPI(title="Ecommerce Shop API", lifespan=lifespan)
 
-# Rate Limit Middleware
+# Rate Limit Middleware (Limit the number of requests to the API)
 app.add_middleware(middleware_class=RateLimitMiddleware)
 
-# CORS Middleware
+# CORS Middleware (Allow Cross-Origin Requests)
 app.add_middleware(
     middleware_class=CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -45,11 +44,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Exception Handler Middleware
+# Exception Handler Middleware (Global)
 app.add_exception_handler(exc_class_or_status_code=AppError, handler=app_error_handler)
 
 
-# API Routers
+# API Routers Endpoints
 app.include_router(auth_controller.router)
 app.include_router(items_controller.router)
 app.include_router(favorites_controller.router)
@@ -59,14 +58,14 @@ app.include_router(analytics_controller.router)
 app.include_router(users_controller.router)
 
 
-# Health check
+# Health check Endpoint
 @app.get(path="/")
 def health_check() -> dict[str, str]:
     return {"status": "Healthy"}
 
-
+# Pics Directory Middleware (Static Files)
 app.mount(
     path="/pics",
-    app=StaticFiles(directory=PICS_DIRECTORY),
+    app=StaticFiles(directory=settings.PICS_DIRECTORY),
     name="pics",
 )

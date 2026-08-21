@@ -29,7 +29,7 @@ class ItemsService:
     def ensure_catalog_seeded() -> None:
         sql: str = load_seed_sql()
         if ItemsRepository.count_items() == 0:
-            ItemsRepository.execute_script(sql)
+            ItemsRepository.execute_seed(sql)
         ItemsRepository.backfill_image_urls(image_urls_by_name(sql))
         ItemsService.delete_all_items_cache()
 

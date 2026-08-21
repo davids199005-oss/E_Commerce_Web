@@ -140,7 +140,7 @@ class ItemsRepository:
             return int(row["item_count"])
 
     @staticmethod
-    def execute_script(sql: str) -> None:
+    def execute_seed(sql: str) -> None:
         with (
             get_connection() as connection,
             connection.cursor(dictionary=True) as cursor,

@@ -4,6 +4,7 @@ from typing import ClassVar
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent.parent.parent
+APP_DIR: Path = Path(__file__).resolve().parent.parent
 ENV_FILE: Path = PROJECT_ROOT / ".env"
 
 
@@ -44,6 +45,9 @@ class Settings(BaseSettings):
     # Chat Configuration
     MAX_PROMPTS_PER_DAY: int
     CHAT_PROMPTS_KEY_PREFIX: str
+
+    # Static files
+    PICS_DIRECTORY: Path = APP_DIR / "static" / "pics"
 
     def __init__(self) -> None:
         super().__init__()
