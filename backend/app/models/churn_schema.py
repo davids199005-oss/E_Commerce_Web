@@ -5,7 +5,7 @@ from typing import Protocol, TypedDict
 
 
 class _ChurnPipeline(Protocol):
-    def predict_proba(self, x: object) -> Sequence[Sequence[float]]: ...
+    def predict_proba(self, X: object) -> Sequence[Sequence[float]]: ...
 
 
 class ChurnModel(TypedDict):

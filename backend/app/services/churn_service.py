@@ -65,7 +65,7 @@ class ChurnService:
         frame: DataFrame = pd.DataFrame(
             [features], columns=cls._model["feature_columns"]
         )
-        probability: float = float(cls._model["pipeline"].predict_proba(x=frame)[0][1])
+        probability: float = float(cls._model["pipeline"].predict_proba(X=frame)[0][1])
 
         return {
             "user_id": user_id,
