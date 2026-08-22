@@ -14,5 +14,5 @@ export const config: AppConfig = {
   requestTimeoutMs: 30_000,
   chatTimeoutMs: 90_000,
   searchDebounceMs: 400,
-  catalogPageSize: 12,
+  catalogPageSize: 15,
 } as const
