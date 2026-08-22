@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +39,16 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Stock status roles. Deliberately separate from --destructive:
+     an out-of-stock item is a fact, not an error. */
+  --color-stock-in: var(--stock-in);
+  --color-stock-in-foreground: var(--stock-in-foreground);
+  --color-stock-low: var(--stock-low);
+  --color-stock-low-foreground: var(--stock-low-foreground);
+  --color-stock-out: var(--stock-out);
+  --color-stock-out-foreground: var(--stock-out-foreground);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,38 +59,49 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Warm pastel surfaces, deep espresso actions.
+     Pastel does not carry enough contrast for a call to action, so the
+     accent stays on chips and badges while every button goes dark. */
+  --background: oklch(0.979 0.011 56);
+  --foreground: oklch(0.24 0.018 45);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.24 0.018 45);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.24 0.018 45);
+  --primary: oklch(0.4 0.05 52);
+  --primary-foreground: oklch(0.985 0.008 60);
+  --secondary: oklch(0.955 0.016 58);
+  --secondary-foreground: oklch(0.32 0.03 48);
+  --muted: oklch(0.955 0.016 58);
+  --muted-foreground: oklch(0.53 0.022 50);
+  --accent: oklch(0.93 0.045 45);
+  --accent-foreground: oklch(0.35 0.06 45);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.912 0.014 58);
+  --input: oklch(0.912 0.014 58);
+  --ring: oklch(0.6 0.1 45);
+
+  --stock-in: oklch(0.9 0.04 145);
+  --stock-in-foreground: oklch(0.42 0.07 145);
+  --stock-low: oklch(0.92 0.06 80);
+  --stock-low-foreground: oklch(0.44 0.09 65);
+  --stock-out: oklch(0.94 0.008 58);
+  --stock-out-foreground: oklch(0.5 0.015 50);
+
+  --chart-1: oklch(0.6 0.13 42);
+  --chart-2: oklch(0.65 0.09 145);
+  --chart-3: oklch(0.7 0.11 80);
+  --chart-4: oklch(0.55 0.07 300);
+  --chart-5: oklch(0.45 0.05 52);
+  --radius: 0.875rem;
+  --sidebar: oklch(0.965 0.014 57);
+  --sidebar-foreground: oklch(0.24 0.018 45);
+  --sidebar-primary: oklch(0.4 0.05 52);
+  --sidebar-primary-foreground: oklch(0.985 0.008 60);
+  --sidebar-accent: oklch(0.93 0.045 45);
+  --sidebar-accent-foreground: oklch(0.35 0.06 45);
+  --sidebar-border: oklch(0.912 0.014 58);
+  --sidebar-ring: oklch(0.6 0.1 45);
 }
 
 .dark {
@@ -102,6 +123,12 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+  --stock-in: oklch(0.35 0.05 145);
+  --stock-in-foreground: oklch(0.88 0.05 145);
+  --stock-low: oklch(0.38 0.07 70);
+  --stock-low-foreground: oklch(0.9 0.06 80);
+  --stock-out: oklch(0.3 0 0);
+  --stock-out-foreground: oklch(0.75 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -126,5 +153,10 @@
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   }
 }
